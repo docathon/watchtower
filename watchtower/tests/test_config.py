@@ -35,7 +35,7 @@ def test_get_issues():
     # Now use some mockdata
     data_home = os.path.join(dirname(__file__), "../mockdata")
     issues = get_issues("matplotlib", "matplotlib", data_home=data_home)
-    assert_true(len(issues))
+    assert_true(len(issues) == 11)
 
 
 def test_get_commits():
@@ -46,7 +46,7 @@ def test_get_commits():
     # Now use some mockdata
     data_home = os.path.join(dirname(__file__), "../mockdata")
     commits = get_commits("matplotlib", "matplotlib", data_home=data_home)
-    assert_true(len(commits))
+    assert_true(len(commits) == 3)
 
 
 def test_get_PRs():
@@ -57,4 +57,4 @@ def test_get_PRs():
     # Now use some mockdata
     data_home = os.path.join(dirname(__file__), "../mockdata")
     PRs = get_PRs("matplotlib", "matplotlib", data_home=data_home)
-    assert_true(len(PRs))
+    assert_true(len(PRs) == 21)
