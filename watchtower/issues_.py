@@ -96,7 +96,7 @@ def select_recent(issues, num=20):
 
     number : int, optional, default: 20
     """
-    return issues.sort_values("updated_at")[:num]
+    return issues.sort_values("created_at")[:num]
 
 
 def get_PRs(project, user, data_home=None):
@@ -106,30 +106,3 @@ def get_PRs(project, user, data_home=None):
     """
     return get_issues(project, user, data_home=data_home, issues_type="PRs")
 
-
-def get_commits(user, project, data_home=None):
-    """
-    Reads the commits json files from the data folder.
-
-    Parameters
-    ----------
-    user : string
-        user or organization name, e.g. "matplotlib"
-
-    project : string
-        project name, e.g, "matplotlib"
-
-    Returns
-    -------
-    commits
-    """
-    # XXX We need to sometime update that folder - how to do that?
-    # XXX for some projects, that's going to get ugly…
-    data_home = get_data_home(data_home)
-    filepath = join(data_home, user, project, "commits.json")
-    try:
-        commits = pd.read_json(filepath)
-    except ValueError:
-        return None
-    commits.sort_values("timestamp", inplace=True)
-    return commits

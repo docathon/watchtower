@@ -1,6 +1,15 @@
+import os
+from os.path import dirname
+import tempfile
+
 import pandas as pd
-from watchtower.commits import is_doc
-from watchtower.utils.testing import assert_true, assert_false
+from watchtower.commits_ import is_doc
+from watchtower._config import clear_data_home
+from watchtower.commits_ import get_commits
+from watchtower.utils.testing import assert_true, assert_equal
+from watchtower.utils.testing import assert_false
+
+DATA_HOME = tempfile.mkdtemp(prefix="watchtower_data_home_test_")
 
 
 def test_is_doc():
@@ -14,3 +23,14 @@ def test_is_doc():
                            "added": ["watchtower/commits.py"]})
     is_doc_ = is_doc(commit)
     assert_false(is_doc_.any())
+
+
+def test_get_commits():
+    commits = get_commits("matplotlib", "matplotlib", data_home=DATA_HOME)
+    clear_data_home(data_home=DATA_HOME)
+    assert_equal(commits, None)
+
+    # Now use some mockdata
+    data_home = os.path.join(dirname(__file__), "../mockdata")
+    commits = get_commits("matplotlib", "matplotlib", data_home=data_home)
+    assert_true(len(commits) == 3)
