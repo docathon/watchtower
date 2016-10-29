@@ -3,6 +3,8 @@ CYTHON ?= cython
 NOSETESTS ?= nosetests
 CTAGS ?= ctags
 
+all: test
+
 in: inplace
 
 inplace:	
@@ -14,4 +16,4 @@ test-code: in
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(NOSETESTS) -s -v --with-coverage watchtower
+	$(NOSETESTS) -s -v --with-coverage --cover-package=watchtower watchtower
