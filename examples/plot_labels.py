@@ -10,10 +10,14 @@ for project in projects:
     user = project
 
     all_issues = issues_.get_issues(user, project, issues_type="all")
+    if all_issues is None:
+        print('No data for {}'.format(project))
+        continue
     opened_issues = issues_.select_opened(all_issues)
 
     # Get all labels
-    labels = labels_.get_labels(user, project)
+    labels = labels_.load_labels(user, project)
+
     # Extract the names of the labels
     labels_names = sorted(labels.name.as_matrix())
     labels_counts = []

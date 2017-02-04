@@ -105,4 +105,3 @@ def get_PRs(project, user, data_home=None):
 
     """
     return get_issues(project, user, data_home=data_home, issues_type="PRs")
-

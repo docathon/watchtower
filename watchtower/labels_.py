@@ -42,7 +42,7 @@ def update_labels(user, project, auth, data_home=None):
     return pd.DataFrame(raw)
 
 
-def get_labels(user, project, data_home=None):
+def load_labels(user, project, data_home=None):
     """
     Reads the labels json files from the data folder.
 

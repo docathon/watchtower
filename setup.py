@@ -1,4 +1,5 @@
 import os
+import setuptools
 from numpy.distutils.core import setup
 
 
