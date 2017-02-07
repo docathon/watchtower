@@ -5,11 +5,14 @@ import matplotlib.pyplot as plt
 projects = ["matplotlib", "numpy", "scikit-learn"]
 for project in projects:
     user = project
-    commits = commits_.get_commits(user, project)
+    commits = commits_.load_commits(user, project)
+    if commits is None:
+        print('No data for {}'.format(project))
+        continue
 
     n_commits = commits.shape[0]
     doc_commits = sum("DOC" in commits.commit[i]["message"]
-                    for i in range(n_commits))
+                      for i in range(n_commits))
     n_commits = []
     doc_commits = []
     for month in range(1, 13):
@@ -42,3 +45,4 @@ for project in projects:
     ax.set_yticks(yticks)
     ax.legend(loc=1)
     ax.set_title(project, fontweight="bold")
+plt.show()
