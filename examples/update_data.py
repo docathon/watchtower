@@ -9,7 +9,6 @@ import keyring
 import json
 
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--auth",
@@ -31,13 +30,14 @@ def set_username_and_token(project, username, token):
 def get_auth_token(*, project=fake_username, store=True):
     """Get the authentication token for current user.
 
-
-    Get it from the keychain if available, otherwise prompt for username, 
-    password, Two Factor Authentication if necessary. Record a token on the keychain
-    for this particular project. And store all the information in the keychain. 
+    Get it from the keychain if available, otherwise prompt for username,
+    password, Two Factor Authentication if necessary. Record a token on the
+    keychain for this particular project. And store all the information in the
+    keychain.
     """
     _, token = get_username_and_auth_token(project=project, store=store)
     return token
+
 
 def get_username_and_auth_token(project=fake_username, store=True):
     """Get username and the authentication token for GitHub.
@@ -68,23 +68,23 @@ def get_username_and_auth_token(project=fake_username, store=True):
       "note_url": "",
     }
     response = requests.post('https://api.github.com/authorizations',
-                            auth=(user, pw), data=json.dumps(auth_request))
+                             auth=(user, pw), data=json.dumps(auth_request))
     if response.status_code == 401 and \
             'required;' in response.headers.get('X-GitHub-OTP', ''):
         print("Your login API requested a one time password", file=sys.stderr)
         otp = getpass.getpass("One Time Password: ", stream=sys.stderr)
         response = requests.post('https://api.github.com/authorizations',
-                            auth=(user, pw),
-                            data=json.dumps(auth_request),
-                            headers={'X-GitHub-OTP':otp})
+                                 auth=(user, pw),
+                                 data=json.dumps(auth_request),
+                                 headers={'X-GitHub-OTP': otp})
     if response.status_code == 422:
-        print("Such a token is already set on GitHub for %s see https://github.com/settings/tokens"% project)
+        print("Such a token is already set on GitHub for "
+              "%s see https://github.com/settings/tokens" % project)
     response.raise_for_status()
     token = json.loads(response.text)['token']
     if store:
         set_username_and_token(project=project, username=user, token=token)
     return user, token
-
 
 
 args = parser.parse_args()
