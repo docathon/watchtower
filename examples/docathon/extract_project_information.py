@@ -3,6 +3,7 @@ from datetime import date
 import os
 import pandas as pd
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("filename",
                     help=("CSV file containing the project "

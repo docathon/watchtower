@@ -55,6 +55,7 @@ def update_commits(user, project, auth, since=None,
         The number of commits to return per page.
     data_home : string
         A path to where the data is stored.
+        Defaults to ~/watchtower_data.
     params : dict-like
         Will be passed to `get_frames`.
 

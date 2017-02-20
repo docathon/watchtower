@@ -27,7 +27,7 @@ def get_data_home(data_home=None):
 
     Parameters
     ----------
-    data_home : string, optional, default: None
+    data_home : string, optional, default: '~/watchtower_data')
 
     Returns
     -------
@@ -44,6 +44,30 @@ def get_data_home(data_home=None):
     if not exists(data_home):
         makedirs(data_home)
     return data_home
+
+
+def get_API_token(token_key):
+    """Return the API token.
+
+    Parameters
+    ----------
+    token_key : string
+        Either the github API token, or a string corresponding
+        to a variable in `os.environ`. If the latter, this should
+        be the key which points to the API token.
+
+    Returns
+    -------
+    token : string
+        The github API token
+    """
+    # XXX add support for keychain lookup as well?
+    if token_key in environ:
+        token = environ.get(token_key)
+    else:
+        # Assume the string is already a key
+        token = token_key
+    return token
 
 
 def clear_data_home(data_home=None):
