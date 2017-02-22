@@ -70,6 +70,30 @@ def get_API_token(token_key):
     return token
 
 
+def get_API_user(username):
+    """Return the API username.
+
+    Parameters
+    ----------
+    username : string
+        Either the github username, or a string corresponding
+        to a variable in `os.environ`. If the latter, this should
+        be the key which points to the API user name.
+
+    Returns
+    -------
+    username : string
+        The github API username
+    """
+    # XXX add support for keychain lookup as well?
+    if username in environ:
+        username = environ.get(username)
+    else:
+        # Assume the string is already a key
+        pass
+    return username
+
+
 def clear_data_home(data_home=None):
     """
     Delete all the content of the data home cache.

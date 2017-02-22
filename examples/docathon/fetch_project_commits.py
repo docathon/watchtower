@@ -9,7 +9,7 @@ parser.add_argument("filename",
                     help=("CSV file with the project "
                           "registration information. This should "
                           "be downloaded manually."))
-parser.add_argument("auth_user")
+parser.add_argument("--auth_user", default='GITHUB_API_USER')
 parser.add_argument("--auth_token", default='GITHUB_API_TOKEN')
 parser.add_argument("--outdir", "-o", default="build")
 parser.add_argument("--per_page", "-n", default=100)
@@ -23,6 +23,7 @@ args = parser.parse_args()
 auth_user = args.auth_user
 auth_token = get_API_token(args.auth_token)
 auth = ':'.join([auth_user, auth_token])
+print('Using authentication pair: {}'.format(auth))
 
 per_page = args.per_page,
 max_pages = args.max_pages
@@ -39,6 +40,7 @@ information = pd.read_csv(args.filename, header=None, skiprows=1,
 # Iterate projects and retrieve its latest info
 print('Updating commits for %s projects' % len(information))
 downloaded_commits = []
+exceptions = []
 for ix, project in information.iterrows():
     try:
         github_handle = project['github_org'].strip("/")
@@ -49,9 +51,10 @@ for ix, project in information.iterrows():
                                 since=since)
         downloaded_commits.append([user, project_name])
     except Exception:
-        s = "---\nFailed to retrive commits for %s/%s\n---\n"
-        print(s % (user, project))
+        exceptions.append(project['name'])
 
 downloaded_commits = np.array(downloaded_commits)
 np.savetxt(".downloaded_projects", downloaded_commits, fmt="%s")
 print('Finished updating commits.')
+if len(exceptions) > 0:
+  print('Could not retrieve information for projects: {}'.format(exceptions))

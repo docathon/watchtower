@@ -1,3 +1,7 @@
+These scripts are a used by the docathon in order to extract information about commits from projects that make documentation-related contributions.
+
+For more information about the docathon, see bids.github.io/docathon
+
 To generate project information::
 
   python extract_project_information.py filename
@@ -7,7 +11,7 @@ information.
 
 To fetch commits::
 
-  python fetch_project_commits.py filename --auth USERNAME:TOKEN
+  python fetch_project_commits.py filename --auth_user USERNAME --auth_token TOKEN
 
 This not only attempts to fetch the commits, but also writes a file called
 ".downloaded_projects", containing org and repo name for all projects. This is
