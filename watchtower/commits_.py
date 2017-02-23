@@ -99,3 +99,40 @@ def is_doc(commits, use_message=True, use_files=True):
     is_doc = is_doc_message | is_doc_files
     is_doc.rename("is_doc", inplace=True)
     return is_doc
+
+
+class CommitHistory(object):
+    """Load commit history for a project.
+
+    Parameters
+    ----------
+    user : string
+        The username for a github project
+    project : string | None
+        The project name. If None, it will be the same as the username.
+
+    Attributes
+    ----------
+    raw : DataFrame
+        The raw data containing all commit information for this project
+    commits : DataFrame
+        A subset of information in the package that can be easily indexed.
+    """
+    def __init__(self, user, project=None):
+        project = user if project is None else project
+        self.user = user
+        self.project = project
+        self.raw = load_commits(user, project)
+
+        # Package into a more readable DataFrame
+        dates = pd.to_datetime([ii['author']['date']
+                                for ii in self.raw['commit']])
+        authors, emails = zip(*[(ii['author']['name'], ii['author']['email'])
+                                for ii in self.raw['commit']])
+        messages = [ii['message'] for ii in self.raw['commit']]
+        data = dict(message=messages, author=authors, email=emails, date=dates)
+        self.commits = pd.DataFrame(data)
+
+    def __repr__(self):
+        return '<CommitHistory> User: {} | Project: {} | n_commits: {}'.format(
+            self.user, self.project, len(self.commits))
