@@ -8,6 +8,7 @@ Mostly this is some copy paste of github_state's code
 import requests
 import collections
 from tqdm import tqdm
+from requests.exceptions import HTTPError
 
 Auth = collections.namedtuple('Auth', 'user auth')
 
@@ -59,13 +60,18 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         params['per_page'] = per_page
     print('Updating repository: {}\nParams: {}'.format(url, params))
     for page in tqdm(range(1, max_pages + 1)):  # for safety
-        params['page'] = str(page)
-        r = requests.get(url,
-                         params=params,
-                         auth=auth)
-        r.raise_for_status()
-        json = r.json()
-        if not json:
-            # empty list
+        try:
+            params['page'] = str(page)
+            r = requests.get(url,
+                             params=params,
+                             auth=auth)
+            r.raise_for_status()
+            json = r.json()
+            if not json:
+                # empty list
+                break
+            yield json
+        except HTTPError:
+            # Github sometimes just throws an error
             break
-        yield json
+
