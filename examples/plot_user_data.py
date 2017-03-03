@@ -1,4 +1,4 @@
-from watchtower.handlers_ import UserDatabase
+from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
 import os
 
@@ -6,15 +6,15 @@ users = ['choldgraf', 'Carreau', 'NelleV']
 auth = os.environ['GITHUB_API']
 
 # Initialize the database
-db = UserDatabase(auth=auth)
+db = GithubDatabase(auth=auth)
 
 # Update users and print the db
 for user in users:
-    db.update_user(user)
+    db.update(user)
 print(db)
 
 # Load the data for plotting
-users = [db.load_user(user) for user in users]
+users = [db.load(user) for user in users]
 
 # Now plot pushes each day
 fig, ax = plt.subplots(figsize=(10, 5))
