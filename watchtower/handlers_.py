@@ -25,6 +25,8 @@ class GithubDatabase(object):
 
     def load(self, user, project=None):
         raw = load_commits(user, project=project, data_home=self.data_home)
+        if raw is None:
+            raise ValueError('No data exists for this user/project')
         if project is None:
             return UserActivity(user, raw)
         else:

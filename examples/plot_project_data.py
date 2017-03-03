@@ -16,7 +16,7 @@ def is_doc(string):
 
 
 auth = os.environ['GITHUB_API']
-update_db = False
+update_db = True
 
 # Initialize the database
 db = GithubDatabase(auth=auth)
@@ -44,8 +44,8 @@ for proj, ax in zip(projects, axs):
     ax.bar(all_commits.index, all_commits['is_doc'], label='all')
     ax.bar(doc_commits.index, doc_commits['is_doc'], label='doc')
     ax.set_title(proj, fontsize=18)
+    ax.set_ylabel('N Commits')
 axs[-1].legend()
-fig.suptitle('Commits since {:%d})'.format(since))
 plt.setp(axs[-1].get_xticklabels(), rotation=45, horizontalalignment='right')
 plt.setp([ax.xaxis.label for ax in axs], visible=False)
 plt.tight_layout()
