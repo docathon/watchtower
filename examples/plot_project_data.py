@@ -22,10 +22,10 @@ update_db = True
 db = GithubDatabase(auth=auth)
 
 # Update users and print the db
-since = '2017-02-25'
+since = '2017-02-10'
 if update_db is True:
     for user, project in projects:
-        db.update(user, project, since='2017-02-25')
+        db.update(user, project, since=since)
 since = pd.to_datetime(since)
 print(db)
 

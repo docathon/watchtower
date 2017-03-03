@@ -82,17 +82,30 @@ def update_commits(user, project=None, auth=None, since=None,
     else:
         url = 'https://api.github.com/repos/{}/{}/commits'.format(
             user, project)
-        filename = os.path.join(path, 'projects', user, project, "commits.json")
+        filename = os.path.join(path, 'projects', user,
+                                project, "commits.json")
+
+    # Pull latest activity info
     raw = _github_api.get_frames(auth, url, since=since,
                                  max_pages=max_pages,
                                  per_page=per_page,
                                  **params)
+    raw = pd.DataFrame(raw)
+    dates = [ii['author']['date'] for ii in raw['commit'].values]
+    raw['date'] = pd.to_datetime(dates)
+
+    # Update pre-existing data
+    old_raw = load_commits(user, project, data_home=data_home)
+    if old_raw is not None:
+        raw = pd.concat([raw, old_raw])
+        raw = raw.drop_duplicates(subset=['date'])
     try:
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    with open(filename, "w") as f:
-        json.dump(raw, f)
+
+    # Save + return
+    raw.to_json(filename)
     return raw
 
 
