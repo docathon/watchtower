@@ -3,7 +3,7 @@ import pandas as pd
 from os.path import join
 import json
 
-from ._config import get_data_home
+from ._config import get_data_home, get_API_token
 from . import _github_api
 
 
@@ -29,9 +29,11 @@ def load_commits(user, project=None, data_home=None):
     if project is None:
         filepath = join(data_home, 'users', user, "activity.json")
     else:
-        filepath = join(data_home, user, project, "commits.json")
+        filepath = join(data_home, 'projects', user, project, "commits.json")
     try:
         commits = pd.read_json(filepath)
+        if len(commits) == 0:
+            raise ValueError('No commits for this project')
     except ValueError as e:
         print(e)
         return None
@@ -72,6 +74,7 @@ def update_commits(user, project=None, auth=None, since=None,
         The raw json returned by the github API.
     """
     path = get_data_home(data_home=data_home)
+    auth = get_API_token(auth) if auth is None else auth
     auth = _github_api.colon_seperated_pair(auth)
     if project is None:
         url = 'https://api.github.com/users/{}/events'.format(user)
@@ -79,17 +82,30 @@ def update_commits(user, project=None, auth=None, since=None,
     else:
         url = 'https://api.github.com/repos/{}/{}/commits'.format(
             user, project)
-        filename = os.path.join(path, user, project, "commits.json")
+        filename = os.path.join(path, 'projects', user,
+                                project, "commits.json")
+
+    # Pull latest activity info
     raw = _github_api.get_frames(auth, url, since=since,
                                  max_pages=max_pages,
                                  per_page=per_page,
                                  **params)
+    raw = pd.DataFrame(raw)
+    dates = [ii['author']['date'] for ii in raw['commit'].values]
+    raw['date'] = pd.to_datetime(dates)
+
+    # Update pre-existing data
+    old_raw = load_commits(user, project, data_home=data_home)
+    if old_raw is not None:
+        raw = pd.concat([raw, old_raw])
+        raw = raw.drop_duplicates(subset=['date'])
     try:
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    with open(filename, "w") as f:
-        json.dump(raw, f)
+
+    # Save + return
+    raw.to_json(filename)
     return raw
 
 
@@ -111,40 +127,3 @@ def is_doc(commits, use_message=True, use_files=True):
     is_doc = is_doc_message | is_doc_files
     is_doc.rename("is_doc", inplace=True)
     return is_doc
-
-
-class CommitHistory(object):
-    """Load commit history for a project.
-
-    Parameters
-    ----------
-    user : string
-        The username for a github project
-    project : string | None
-        The project name. If None, it will be the same as the username.
-
-    Attributes
-    ----------
-    raw : DataFrame
-        The raw data containing all commit information for this project
-    commits : DataFrame
-        A subset of information in the package that can be easily indexed.
-    """
-    def __init__(self, user, project=None):
-        project = user if project is None else project
-        self.user = user
-        self.project = project
-        self.raw = load_commits(user, project)
-
-        # Package into a more readable DataFrame
-        dates = pd.to_datetime([ii['author']['date']
-                                for ii in self.raw['commit']])
-        authors, emails = zip(*[(ii['author']['name'], ii['author']['email'])
-                                for ii in self.raw['commit']])
-        messages = [ii['message'] for ii in self.raw['commit']]
-        data = dict(message=messages, author=authors, email=emails, date=dates)
-        self.commits = pd.DataFrame(data)
-
-    def __repr__(self):
-        return '<CommitHistory> User: {} | Project: {} | n_commits: {}'.format(
-            self.user, self.project, len(self.commits))

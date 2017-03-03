@@ -2,33 +2,49 @@ from glob import glob
 import os
 import pandas as pd
 from .commits_ import load_commits, update_commits
-from ._github_api import colon_seperated_pair
 from ._config import get_data_home, get_API_token
 
 collect_user_events = ['PushEvent', 'CreateEvent', 'PullRequestEvent']
 
 
-class UserDatabase(object):
+class GithubDatabase(object):
     def __init__(self, data_home=None, auth=None):
 
         self.data_home = get_data_home(data_home)
-        users = glob(os.path.join(self.data_home, 'users', '*'))
-        users = [ii.split(os.sep)[-1] for ii in users]
-        self.users = users
+        self._load_db()
+
+        # Authentication
         self.auth = get_API_token(auth)
 
-    def update_user(self, user, since=None,
-                    max_pages=100, per_page=100):
-        update_commits(user, auth=self.auth, since=since, max_pages=max_pages,
+    def update(self, user, project=None, since=None,
+               max_pages=100, per_page=100):
+        update_commits(user, project=project, auth=self.auth,
+                       since=since, max_pages=max_pages,
                        per_page=per_page, data_home=self.data_home)
+        self._load_db()
 
-    def load_user(self, user):
-        raw = load_commits(user, data_home=self.data_home)
-        return UserActivity(user, raw)
+    def load(self, user, project=None):
+        raw = load_commits(user, project=project, data_home=self.data_home)
+        if raw is None:
+            raise ValueError('No data exists for this user/project')
+        if project is None:
+            return UserActivity(user, raw)
+        else:
+            return ProjectActivity(user, project, raw)
+
+    def _load_db(self):
+        # List users in db
+        users = glob(os.path.join(self.data_home, 'users', '*'))
+        self.users = [ii.split(os.sep)[-1] for ii in users]
+
+        # List projects in db
+        projects = glob(os.path.join(self.data_home, 'projects', '*', '*'))
+        self.projects = [os.sep.join(ii.split(os.sep)[-2:])
+                         for ii in projects]
 
     def __repr__(self):
-        s = 'User Database | {} Users | {}'.format(
-            len(self.users), self.users[:4])
+        s = 'User Database | {} Users | {} projects'.format(
+            len(self.users), len(self.projects))
         return s
 
 
@@ -44,4 +60,32 @@ class UserActivity(object):
 
     def __repr__(self):
         s = 'User: {} | N Events: {}'.format(self.user, len(self.raw))
+        return s
+
+
+class ProjectActivity(object):
+    def __init__(self, user, project, raw):
+        self.user = user
+        self.project = project
+        self.raw = raw
+
+        # Extract commits information that is useful
+        commits = dict(email=[], name=[], message=[], sha=[],
+                       date=[])
+        for commit in raw['commit'].values:
+            commits['email'].append(commit['author']['email'])
+            commits['name'].append(commit['author']['name'])
+            commits['message'].append(commit['message'])
+            commits['sha'].append(commit['tree']['sha'])
+            commits['date'].append(commit['author']['date'])
+        commits = pd.DataFrame(commits)
+        commits['date'] = pd.to_datetime(commits['date'])
+        commits = commits.set_index('date')
+        commits['project'] = project
+        commits['user'] = user
+        self.commits = commits
+
+    def __repr__(self):
+        s = 'Project: {} / {} | N Events: {}'.format(
+            self.user, self.project, len(self.commits))
         return s
