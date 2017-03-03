@@ -74,4 +74,3 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         except HTTPError:
             # Github sometimes just throws an error
             break
-
