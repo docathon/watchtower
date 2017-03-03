@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 from os.path import join
-import json
 
 from ._config import get_data_home, get_API_token
 from . import _github_api
@@ -91,8 +90,15 @@ def update_commits(user, project=None, auth=None, since=None,
                                  per_page=per_page,
                                  **params)
     raw = pd.DataFrame(raw)
-    dates = [ii['author']['date'] for ii in raw['commit'].values]
-    raw['date'] = pd.to_datetime(dates)
+    if len(raw) == 0:
+        raise ValueError('No activity found')
+
+    if project is None:
+        raw = raw.rename(columns={'created_at': 'date'})
+    else:
+        dates = [ii['author']['date'] for ii in raw['commit'].values]
+        raw['date'] = dates
+    raw['date'] = pd.to_datetime(raw['date'])
 
     # Update pre-existing data
     old_raw = load_commits(user, project, data_home=data_home)

@@ -54,7 +54,7 @@ class UserActivity(object):
         self.raw = raw
         for event_type in collect_user_events:
             this_raw = self.raw.query('type == @event_type')
-            this_raw = this_raw.set_index('created_at')
+            this_raw = this_raw.set_index('date')
             this_raw.index = pd.to_datetime(this_raw.index)
             setattr(self, event_type, this_raw)
 
