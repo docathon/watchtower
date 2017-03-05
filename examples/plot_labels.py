@@ -1,35 +1,41 @@
 import numpy as np
-
-from watchtower import issues_
-from watchtower import labels_
+import pandas as pd
+from watchtower import issues_, labels_
+from watchtower import GithubDatabase
 import matplotlib.pyplot as plt
 
 projects = ("matplotlib", "scikit-learn", "scikit-image", "ipython", "numpy")
+db = GithubDatabase()
 
+update_issues = False  # Do we update the database
+state = 'open'  # closed / open / all
+since = '2017-02-01'
 for project in projects:
     user = project
+    if update_issues is True:
+        db.update(user, project, state=state, since=since)
 
-    all_issues = issues_.get_issues(user, project, issues_type="all")
-    if all_issues is None:
+    proj = db.load(user, project)
+    if proj.issues is None:
         print('No data for {}'.format(project))
         continue
-    opened_issues = issues_.select_opened(all_issues)
-
-    # Get all labels
-    labels = labels_.load_labels(user, project)
+    all_issues = proj.issues
+    open_issues = all_issues.query('state == "open"')
 
     # Extract the names of the labels
-    labels_names = sorted(labels.name.as_matrix())
-    labels_counts = []
-    opened_labels = []
-
-    for name in labels_names:
-        labels_counts.append(sum(
-            [1 for label in all_issues["labels"]
-             for l in label if l["name"] == name]))
-        opened_labels.append(sum(
-            [1 for label in opened_issues["labels"]
-             for l in label if l["name"] == name]))
+    all_labels = np.array([name for names in all_issues['label_names'].values
+                           for name in names])
+    open_labels = np.array([name for names in open_issues['label_names'].values
+                            for name in names])
+    unique_labels = np.unique(all_labels)
+    counts = dict()
+    for label in unique_labels:
+        n_instances = np.sum(all_labels == label)
+        n_open = np.sum(open_labels == label)
+        counts[label] = (n_instances, n_open)
+    counts = pd.DataFrame(counts).T
+    counts.columns = ['all', 'open']
+    counts = counts.sort_values('all', ascending=False)
 
     fig = plt.figure(figsize=(14, 5))
     ax = fig.add_axes([0.1, 0.3, 0.8, 0.6])
@@ -40,11 +46,11 @@ for project in projects:
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
 
-    ax.bar(np.arange(len(labels_names)), labels_counts, label="Closed")
-    ax.bar(np.arange(len(labels_names)), opened_labels, label="Open")
-
-    ax.set_xticks(np.arange(len(labels_names)))
-    ax.set_xticklabels(labels_names, rotation=90, fontsize="x-small")
+    for column in counts.columns:
+        ixs = range(counts.shape[0])
+        ax.bar(ixs, counts[column], label=column)
+    ax.set_xticks(ixs)
+    ax.set_xticklabels(counts.index, rotation=90, fontsize="x-small")
 
     yticks = ax.get_yticks()
     for l in yticks:
@@ -53,3 +59,4 @@ for project in projects:
     ax.set_title(project, fontweight="bold")
 
     ax.legend()
+plt.show()

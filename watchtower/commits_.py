@@ -4,9 +4,11 @@ from os.path import join
 
 from ._config import get_data_home, get_API_token
 from . import _github_api
+from .handlers_ import ProjectCommits
 
 
-def load_commits(user, project=None, data_home=None):
+def load_commits(user, project=None, data_home=None,
+                 use_handler=False):
     """
     Reads the commits json files from the data folder.
 
@@ -36,7 +38,11 @@ def load_commits(user, project=None, data_home=None):
     except ValueError as e:
         print(e)
         return None
-    return commits
+
+    if use_handler is False:
+        return commits
+    else:
+        return ProjectCommits(user, project, commits)
 
 
 def update_commits(user, project=None, auth=None, since=None,
@@ -91,7 +97,8 @@ def update_commits(user, project=None, auth=None, since=None,
                                  **params)
     raw = pd.DataFrame(raw)
     if len(raw) == 0:
-        raise ValueError('No activity found')
+        print('No activity found')
+        return None
 
     if project is None:
         raw = raw.rename(columns={'created_at': 'date'})
@@ -103,7 +110,7 @@ def update_commits(user, project=None, auth=None, since=None,
     # Update pre-existing data
     old_raw = load_commits(user, project, data_home=data_home)
     if old_raw is not None:
-        raw = pd.concat([raw, old_raw])
+        raw = pd.concat([raw, old_raw], ignore_index=True)
         raw = raw.drop_duplicates(subset=['date'])
     try:
         os.makedirs(os.path.dirname(filename))

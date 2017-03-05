@@ -1,14 +1,15 @@
 import os
 from os.path import join
-import json
 
 import pandas as pd
 
 from . import _github_api
-from ._config import get_data_home
+from ._config import get_data_home, get_API_token
+from .handlers_ import ProjectIssues
 
 
-def update_issues(user, project, auth, state="all", data_home=None):
+def update_issues(user, project, auth=None,
+                  state="all", since=None, data_home=None):
     """
     Updates issues
 
@@ -21,8 +22,10 @@ def update_issues(user, project, auth, state="all", data_home=None):
     project : string
         project name, e.g., "matplotlib"
 
-    auth : string
-        authentification information, e.g. "username/token"
+    auth : string | None
+        authentification information, e.g. "username:token".
+        If None, the key 'GITHUB_API'
+        will be queried in `os.environ`.
 
     state : {"all", "open", "closed"}, optional
 
@@ -30,21 +33,30 @@ def update_issues(user, project, auth, state="all", data_home=None):
     -------
     raw : string containing all the issues
     """
+    auth = get_API_token(auth)
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues'.format(user, project)
-    raw = _github_api.get_frames(auth, url, state=state)
+    raw = _github_api.get_frames(auth, url, state=state, since=since)
     path = get_data_home(data_home=data_home)
-    filename = os.path.join(path, user, project, "issues.json")
+    raw = pd.DataFrame(raw)
+
+    filename = os.path.join(path, 'projects', user, project, "issues.json")
+
+    # Update pre-existing data
+    old_raw = load_issues(user, project, data_home=data_home)
+    if old_raw is not None:
+        raw = pd.concat([raw, old_raw], ignore_index=True)
+        raw = raw.drop_duplicates(subset=['id'])
     try:
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    with open(filename, "w") as f:
-        json.dump(raw, f)
+    raw.to_json(filename)
     return raw
 
 
-def get_issues(project, user, data_home=None, issues_type="issues"):
+def load_issues(user, project, data_home=None,
+                use_handler=False):
     """
     Reads the json issues from the
 
@@ -54,24 +66,16 @@ def get_issues(project, user, data_home=None, issues_type="issues"):
     # Maybe we could store premantly only the closed issues and update the
     # rest?
     data_home = get_data_home(data_home)
-    filepath = join(data_home, user, project, "issues.json")
+    filepath = join(data_home, 'projects', user, project, "issues.json")
+
     try:
         issues = pd.read_json(filepath)
     except ValueError:
         return None
-
-    issues.set_index("number", inplace=True)
-    issues.sort_index(inplace=True)
-    has_pr = -issues.pull_request.isnull()
-    if issues_type == "issues":
-        return issues[-has_pr]
-    elif issues_type == "PRs":
-        return issues[has_pr]
-    elif issues_type == "all":
+    if use_handler is False:
         return issues
     else:
-        raise ValueError("%s is an unknown issue type. `issues_type` "
-                         "can be 'issues', 'PRs' or 'all'")
+        return ProjectIssues(user, project, issues)
 
 
 def select_opened(issues):
