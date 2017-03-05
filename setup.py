@@ -30,6 +30,7 @@ if __name__ == "__main__":
           maintainer_email=MAINTAINER_EMAIL,
           description=DESCRIPTION,
           version=VERSION,
+          install_requires=['tqdm', 'pandas', 'requests'],
           zip_safe=False,  # the package can run out of an .egg file
           classifiers=[
               'Intended Audience :: Developers',
