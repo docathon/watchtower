@@ -19,13 +19,15 @@ class GithubDatabase(object):
         self.auth = get_API_token(auth)
 
     def update(self, user, project=None, commits=True, issues=True,
-               since=None, max_pages=100, per_page=100, issues_state='all'):
+               since=None, max_pages=100, per_page=100, issues_state='all',
+               branch=None):
         from .commits_ import update_commits
         from .issues_ import update_issues
         if commits is True:
             update_commits(user, project=project, auth=self.auth,
                            since=since, max_pages=max_pages,
-                           per_page=per_page, data_home=self.data_home)
+                           per_page=per_page, data_home=self.data_home,
+                           branch=branch)
         if issues is True and project is not None:
             update_issues(user, project, auth=self.auth, since=since,
                           data_home=self.data_home, state=issues_state)
@@ -46,7 +48,7 @@ class GithubDatabase(object):
             self.update(user, auth=self.auth, since=since, max_pages=max_pages,
                         per_page=per_page, data_home=self.data_home)
 
-    def load(self, user, project=None):
+    def load(self, user, project=None, branch=None):
         from .commits_ import load_commits
         if project is None:
             raw = load_commits(user, project=project, data_home=self.data_home)
@@ -54,7 +56,7 @@ class GithubDatabase(object):
                 raise ValueError('No data exists for this user/project')
             return UserActivity(user, raw)
         else:
-            return ProjectActivity(user, project)
+            return ProjectActivity(user, project, branch=branch)
 
     def _load_db(self):
         # List users in db
@@ -88,7 +90,7 @@ class UserActivity(object):
 
 
 class ProjectActivity(object):
-    def __init__(self, user, project):
+    def __init__(self, user, project, branch=None):
         from .issues_ import load_issues
         from .commits_ import load_commits
 
@@ -98,7 +100,8 @@ class ProjectActivity(object):
 
         self.handlers = {}
         self.handlers['issues'] = load_issues(user, project, use_handler=True)
-        self.handlers['commits'] = load_commits(user, project, use_handler=True)
+        self.handlers['commits'] = load_commits(
+            user, project, branch=branch, use_handler=True)
         if self.handlers['issues'] is not None:
             self.issues = self.handlers['issues'].issues
         else:

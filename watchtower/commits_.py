@@ -8,7 +8,7 @@ from .handlers_ import ProjectCommits
 
 
 def load_commits(user, project=None, data_home=None,
-                 use_handler=False):
+                 use_handler=False, branch=None):
     """
     Reads the commits json files from the data folder.
 
@@ -29,8 +29,11 @@ def load_commits(user, project=None, data_home=None,
     data_home = get_data_home(data_home)
     if project is None:
         filepath = join(data_home, 'users', user, "activity.json")
-    else:
+    elif branch is None:
         filepath = join(data_home, 'projects', user, project, "commits.json")
+    else:
+        filepath = join(data_home, 'projects', user, project,
+                        'branches', branch, 'commits.json')
     try:
         commits = pd.read_json(filepath)
         if len(commits) == 0:
@@ -47,7 +50,7 @@ def load_commits(user, project=None, data_home=None,
 
 def update_commits(user, project=None, auth=None, since=None,
                    max_pages=100, per_page=100,
-                   data_home=None, **params):
+                   data_home=None, branch=None, **params):
     """Update the commit data for a repository.
 
     Parameters
@@ -81,21 +84,27 @@ def update_commits(user, project=None, auth=None, since=None,
     path = get_data_home(data_home=data_home)
     auth = get_API_token(auth) if auth is None else auth
     auth = _github_api.colon_seperated_pair(auth)
+    api_root = 'https://api.github.com/'
     if project is None:
-        url = 'https://api.github.com/users/{}/events'.format(user)
+        url = api_root + 'users/{}/events'.format(user)
         filename = os.path.join(path, 'users', user, "activity.json")
-    else:
-        url = 'https://api.github.com/repos/{}/{}/commits'.format(
+    elif branch is None:
+        url = api_root + 'repos/{}/{}/commits'.format(
             user, project)
         filename = os.path.join(path, 'projects', user,
                                 project, "commits.json")
-
+    else:
+        url = api_root + 'repos/{}/{}/commits?sha={}'.format(
+            user, project, branch)
+        filename = os.path.join(path, 'projects', user, project,
+                                'branches', branch, "commits.json")
     # Pull latest activity info
     raw = _github_api.get_frames(auth, url, since=since,
                                  max_pages=max_pages,
                                  per_page=per_page,
                                  **params)
     raw = pd.DataFrame(raw)
+
     if len(raw) == 0:
         print('No activity found')
         return None
@@ -108,7 +117,8 @@ def update_commits(user, project=None, auth=None, since=None,
     raw['date'] = pd.to_datetime(raw['date'])
 
     # Update pre-existing data
-    old_raw = load_commits(user, project, data_home=data_home)
+    old_raw = load_commits(user, project, branch=branch,
+                           data_home=data_home)
     if old_raw is not None:
         raw = pd.concat([raw, old_raw], ignore_index=True)
         raw = raw.drop_duplicates(subset=['date'])
@@ -140,3 +150,12 @@ def is_doc(commits, use_message=True, use_files=True):
     is_doc = is_doc_message | is_doc_files
     is_doc.rename("is_doc", inplace=True)
     return is_doc
+
+
+def find_word_in_string(a, queries=None):
+    queries = 'doc' if queries is None else queries
+    in_string = 0
+    for word in queries:
+        if word.lower() in a.lower():
+            in_string += 1
+    return in_string > 0

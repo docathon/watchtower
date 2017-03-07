@@ -65,6 +65,7 @@ def get_entries(auth, url, max_pages=100, per_page=100,
             r = requests.get(url,
                              params=params,
                              auth=auth)
+
             r.raise_for_status()
             json = r.json()
             if not json:
