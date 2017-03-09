@@ -16,13 +16,21 @@ def load_commits(user, project=None, data_home=None,
     ----------
     user : string
         user or organization name, e.g. "matplotlib"
-
     project : string
-        project name, e.g, "matplotlib"
+        project name, e.g, "matplotlib". If None, user
+        information will be loaded.
+    data_home : string
+        The path to the watchtower data. Defaults to ~/watchtower_data.
+    use_handler : bool
+        Whether to return data as one of the objects in
+        `watchtower.handlers_`
+    branch : string
+        The branch fo the project to load.
 
     Returns
     -------
-    commits
+    commits : json | Handler object
+        The commits for this user/project.
     """
     # XXX We need to sometime update that folder - how to do that?
     # XXX for some projects, that's going to get ugly…
@@ -56,11 +64,10 @@ def update_commits(user, project=None, auth=None, since=None,
     Parameters
     ----------
     user : string
-        The user / organization of the repository
+        user or organization name, e.g. "matplotlib"
     project : string | None
-        The repository name. If None, all user commit activity will
-        be pulled. If a string, all activity for the project will
-        be pulled.
+        project name, e.g, "matplotlib". If None, user
+        information will be loaded.
     auth : string (user:api_key)
         The username / API key for github, separated by a colon. If
         None, the key `GITHUB_API` will be searched for in `environ`.
@@ -71,8 +78,9 @@ def update_commits(user, project=None, auth=None, since=None,
     per_page : int
         The number of commits to return per page.
     data_home : string
-        A path to where the data is stored.
-        Defaults to ~/watchtower_data.
+        The path to the watchtower data. Defaults to ~/watchtower_data.
+    branch : string
+        The branch fo the project to load.
     params : dict-like
         Will be passed to `get_frames`.
 
@@ -132,30 +140,27 @@ def update_commits(user, project=None, auth=None, since=None,
     return raw
 
 
-def is_doc(commits, use_message=True, use_files=True):
-    """
-    Find commits that are documentation related.
+def find_word_in_string(string, queries=None):
+    """Find one of a collection of query words in a string.
 
     Parameters
     ----------
-    commits : pd.DataFrame
-        pandas dataframe containing the commits information.
+    string : string
+        The string in which we will search for words
+    queries : string | list of strings | None
+        The words to search for in string
 
-    use_message : bool, optional, default: True
-
-    use_files: bool, optional, default: True
+    Returns
+    -------
+    in_strong : bool
+        Whether or not one of the queries was found.
     """
-    is_doc_message = commits.message.apply(lambda x: "doc" in x.lower())
-    is_doc_files = commits.added.apply(lambda x: "doc" in " ".join(x).lower())
-    is_doc = is_doc_message | is_doc_files
-    is_doc.rename("is_doc", inplace=True)
-    return is_doc
-
-
-def find_word_in_string(a, queries=None):
     queries = 'doc' if queries is None else queries
+    if isinstance(queries, str):
+        queries = [queries]
     in_string = 0
     for word in queries:
-        if word.lower() in a.lower():
+        if word.lower() in string.lower():
             in_string += 1
-    return in_string > 0
+    in_string = in_string > 0
+    return in_string
