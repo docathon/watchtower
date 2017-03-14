@@ -1,8 +1,9 @@
 import os
 import pandas as pd
 from os.path import join
+from datetime import datetime
 
-from ._config import get_data_home, get_API_token
+from ._config import get_data_home, get_API_token, DATETIME_FORMAT
 from . import _github_api
 from .handlers_ import ProjectCommits
 
@@ -36,6 +37,9 @@ def load_commits(user, project=None, data_home=None,
                         'branches', branch, 'commits.json')
     try:
         commits = pd.read_json(filepath)
+        commits['date'] = pd.to_datetime(commits['date'].values)\
+            .tz_localize('UTC')\
+            .tz_convert('US/Pacific')
         if len(commits) == 0:
             raise ValueError('No commits for this project')
     except ValueError as e:
@@ -114,7 +118,6 @@ def update_commits(user, project=None, auth=None, since=None,
     else:
         dates = [ii['author']['date'] for ii in raw['commit'].values]
         raw['date'] = dates
-    raw['date'] = pd.to_datetime(raw['date'])
 
     # Update pre-existing data
     old_raw = load_commits(user, project, branch=branch,
@@ -128,8 +131,8 @@ def update_commits(user, project=None, auth=None, since=None,
         pass
 
     # Save + return
-    raw.to_json(filename)
-    return raw
+    raw.to_json(filename, date_format=DATETIME_FORMAT)
+    return load_commits(user, project, data_home=data_home, branch=branch)
 
 
 def is_doc(commits, use_message=True, use_files=True):

@@ -9,6 +9,8 @@ from os.path import expanduser
 from os import makedirs
 import shutil
 
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 
 def get_data_home(data_home=None):
     """Return the path of the watchtower data dir.

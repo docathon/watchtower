@@ -128,15 +128,16 @@ class ProjectCommits(object):
         # Extract commits information that is useful
         commits = dict(email=[], name=[], message=[], sha=[],
                        date=[])
-        for commit in raw['commit'].values:
+
+        for commit, sha, date in raw[['commit', 'sha', 'date']].values:
             commits['email'].append(commit['author']['email'])
             commits['name'].append(commit['author']['name'])
             commits['message'].append(commit['message'])
-            commits['sha'].append(commit['tree']['sha'])
-            commits['date'].append(commit['author']['date'])
+            commits['sha'].append(sha)
+            commits['date'].append(date)
         commits = pd.DataFrame(commits)
-        commits['date'] = pd.to_datetime(commits['date'])
         commits = commits.set_index('date')
+        commits.index = pd.to_datetime(commits.index)
         commits['project'] = project
         commits['user'] = user
         self.commits = commits
@@ -151,13 +152,16 @@ class ProjectIssues(object):
     def __init__(self, user, project, raw):
         self.user = user
         self.project = project
+        raw = raw.set_index('date')
+        raw.index = pd.to_datetime(raw.index)
+
         self.raw = raw
 
         # Extract issue information that is useful
         # Building a dictionary in case we need to dig
         # deeper in future versions of watchtower
         issues = dict(
-            title=[], created_at=[], labels=[], state=[],
+            title=[], labels=[], state=[],
             updated_at=[], html_url=[], id=[],
             user=[], pull_request=[])
         if len(raw) == 0:
@@ -168,9 +172,6 @@ class ProjectIssues(object):
         insert_keys = list([key for key in issues.keys()
                             if key not in raw.columns])
         issues = raw[use_keys]
-        issues = issues.rename(columns={'created_at': 'date'})\
-            .set_index('date')
-        issues.index = pd.to_datetime(issues.index)
 
         # Label names
         label_names = [list(label['name']
