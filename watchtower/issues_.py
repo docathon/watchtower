@@ -11,27 +11,29 @@ from .handlers_ import ProjectIssues
 def update_issues(user, project, auth=None,
                   state="all", since=None, data_home=None):
     """
-    Updates issues
+    Updates the issues information for a user / project.
 
     Parameters
     ----------
-
     user : string
-        username or organization, e.g, "matplotlib"
-
+        user or organization name, e.g. "matplotlib"
     project : string
-        project name, e.g., "matplotlib"
-
-    auth : string | None
-        authentification information, e.g. "username:token".
-        If None, the key 'GITHUB_API'
-        will be queried in `os.environ`.
-
-    state : {"all", "open", "closed"}, optional
+        project name, e.g, "matplotlib". If None, user
+        information will be loaded.
+    auth : string (user:api_key)
+        The username / API key for github, separated by a colon. If
+        None, the key `GITHUB_API` will be searched for in `environ`.
+    state : 'all' | 'open' | 'closed'
+        Whether to include only a subset, or all issues.
+    since : string
+        Search for activity since this date
+    data_home : string
+        The path to the watchtower data. Defaults to ~/watchtower_data.
 
     Returns
     -------
-    raw : string containing all the issues
+    raw : json
+        The json string containing all the issue information
     """
     auth = get_API_token(auth)
     auth = _github_api.colon_seperated_pair(auth)
@@ -59,7 +61,25 @@ def update_issues(user, project, auth=None,
 def load_issues(user, project, data_home=None,
                 use_handler=False):
     """
-    Reads the json issues from the
+    Reads the commits json files from the data folder.
+
+    Parameters
+    ----------
+    user : string
+        user or organization name, e.g. "matplotlib"
+    project : string
+        project name, e.g, "matplotlib". If None, user
+        information will be loaded.
+    data_home : string
+        The path to the watchtower data. Defaults to ~/watchtower_data.
+    use_handler : bool
+        Whether to return data as one of the objects in
+        `watchtower.handlers_`
+
+    Returns
+    -------
+    issues : json | ProjectIssues
+        The issues for this project / user.
 
     """
     # FIXME issues should be reloaded from time to time, as some are opened
@@ -82,36 +102,3 @@ def load_issues(user, project, data_home=None,
         return issues
     else:
         return ProjectIssues(user, project, issues)
-
-
-def select_opened(issues):
-    """
-    Select opened issues
-
-    Returns
-    -------
-    Opened issues
-    """
-    return issues[issues.state == "open"]
-
-
-def select_recent(issues, num=20):
-    """
-    Select recent issues
-
-    Parameters
-    ----------
-    issues : pd.DataFrame
-        list of issues
-
-    number : int, optional, default: 20
-    """
-    return issues.sort_values("created_at")[:num]
-
-
-def get_PRs(project, user, data_home=None):
-    """
-    Reads the json issues from the
-
-    """
-    return get_issues(project, user, data_home=data_home, issues_type="PRs")
