@@ -4,7 +4,7 @@ from os.path import join
 import pandas as pd
 
 from . import _github_api
-from ._config import get_data_home, get_API_token
+from ._config import get_data_home, get_API_token, DATETIME_FORMAT
 from .handlers_ import ProjectIssues
 
 
@@ -39,6 +39,7 @@ def update_issues(user, project, auth=None,
     raw = _github_api.get_frames(auth, url, state=state, since=since)
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)
+    raw = raw.rename(columns={'created_at': 'date'})
 
     filename = os.path.join(path, 'projects', user, project, "issues.json")
 
@@ -51,8 +52,8 @@ def update_issues(user, project, auth=None,
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    raw.to_json(filename)
-    return raw
+    raw.to_json(filename, date_format=DATETIME_FORMAT)
+    return load_issues(user, project, data_home=data_home)
 
 
 def load_issues(user, project, data_home=None,
@@ -70,6 +71,11 @@ def load_issues(user, project, data_home=None,
 
     try:
         issues = pd.read_json(filepath)
+        if len(issues) == 0:
+            return None
+        issues['date'] = pd.to_datetime(issues['date'].values)\
+            .tz_localize('UTC')\
+            .tz_convert('US/Pacific')
     except ValueError:
         return None
     if use_handler is False:

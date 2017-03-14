@@ -9,6 +9,8 @@ import requests
 import collections
 from tqdm import tqdm
 from requests.exceptions import HTTPError
+from pandas import to_datetime
+from numpy import ndarray
 
 Auth = collections.namedtuple('Auth', 'user auth')
 
@@ -75,3 +77,28 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         except HTTPError:
             # Github sometimes just throws an error
             break
+
+
+def parse_github_dates(dates, tz='US/Pacific'):
+    """Parse github dates so they can be read with strptime.
+
+    Parameters
+    ----------
+    dates : list of date strings
+        A list of github date strings
+    format : string
+        The format to pass to `datetime.strptime`.
+
+
+    Returns
+    -------
+    dates : DatetimeIndex
+        The dates converted to a pandas index.
+    """
+    if not isinstance(dates, (list, ndarray)):
+        raise ValueError('dates must be a list')
+    # github returns ISO style dates in UTC
+    dates = to_datetime(dates, utc=True)
+    # Convert to tz
+    dates = dates.tz_convert(tz)
+    return dates
