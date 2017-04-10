@@ -33,7 +33,7 @@ def get_frames(auth, url, max_pages=100, per_page=100,
 
 
 def get_entries(auth, url, max_pages=100, per_page=100,
-                **params):
+                verbose=False, **params):
     """
     Get entries from GitHub
 
@@ -48,6 +48,8 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         The number of pages of commits to return.
     per_page : int
         The number of commits to return per page.
+    verbose : bool
+        Controls progress bar printing.
     params : dict-like
         Will be passed to requests.get
 
@@ -58,10 +60,13 @@ def get_entries(auth, url, max_pages=100, per_page=100,
     """
     # TODO this should only fetch new stuff.
     params = {} if params is None else params
+    iter_indices = range(1, max_pages + 1)
     if 'per_page' not in params.keys():
         params['per_page'] = per_page
-    print('Updating repository: {}\nParams: {}'.format(url, params))
-    for page in tqdm(range(1, max_pages + 1)):  # for safety
+    if verbose is True:
+        print('Updating repository: {}\nParams: {}'.format(url, params))
+        iter_indices = tqdm(iter_indices)
+    for page in iter_indices:  # for safety
         try:
             params['page'] = str(page)
             r = requests.get(url,
