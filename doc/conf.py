@@ -32,9 +32,18 @@
 # ones.
 
 import sphinx_gallery
+import numpydoc
+
+import sys
+
+sys.path.append("..")
 
 extensions = [
         'sphinx_gallery.gen_gallery',
+        "sphinx.ext.doctest",
+        "sphinx.ext.autodoc",
+        "sphinx.ext.autosummary",
+        "numpydoc"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -45,6 +54,11 @@ templates_path = ['_templates']
 #
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
+
+autodoc_default_flags = ['members', 'inherited-members']
+
+# generate autosummary even if no references
+autosummary_generate = True
 
 # The master toctree document.
 master_doc = 'index'

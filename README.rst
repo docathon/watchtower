@@ -12,6 +12,8 @@ Extra dependencies for the documentation
 - matplotlib
 - sphinx
 - sphinx-gallery
+- pillow
+- numpydoc
 
 Commits
 -------
