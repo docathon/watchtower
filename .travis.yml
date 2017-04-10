@@ -1,0 +1,11 @@
+script:
+- set -e
+- pip install doctr
+- cd doc
+- make html
+- cd ..
+- doctr deploy .
+
+env:
+global:`
+  - secure: "HkGfrtfmBpIMQ04p1GMyZQMgqzll41z85ixA6SmwnR50OGyYMwN5J+83awyrbysIph9mRBxprOQCMGp1KgCpySeaiDxQvig0/i16LrYErxZlr1tpYnFgbHjmvdcJrjIWgu6qvfkh7q3XPiVjIFHADU6WgiS2n8e7v5Dp4KxAz/MVNO7eQPgNDp5/wCu+Z74xbRGD9TxwwhhIi+HCG3HiA9yXOjxOVI8b41irsZa3kegtyzhMZm1MFjPsbJ9jhUrF5HexTdJk+W1B/tbhaTcbsbZGryhvolvqzmfi7T6eXxniLX+oGne2G2Zetf63mf0a04gCkSQJIFn2WVWv4ge80J9cVc22hSX8viibH1DEPJoXGh4gcp53nXP6gX62qRGvvPXPL9PMfJPQldpLZJOpxNj9yw6Jtrz6XtAiqg2k6wsIas7QqpjKV6CqxZVJTx4eUSJDwqZvfxjz2pbkzITltpgYqUUhRWx4z2ShETb209sM7gApGN6rBv+SalXFEcqgUyJ797ZtZfgNmOe2FITRrtADmRqY3Kc6F3VhdoVc6lvgyi8HIvSFJR6kea0Cx7NxU1A3L6O16kA62Rjv6jGOFrN7n+YijMNL985m+/8RyJKcqknldMXYYlQEFgV18zdH7vsVVcz9AO1xFjWg80ijdHRICFtrMykjSA4Iwq+brro="
