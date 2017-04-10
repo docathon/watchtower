@@ -3,8 +3,9 @@ import os
 import os.path as op
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
 from ._config import get_data_home, get_API_token
+from .commits_ import update_commits
+from .issues_ import update_issues
 
 
 class GithubDatabase(object):
@@ -72,8 +73,6 @@ class GithubDatabase(object):
         issues_state : 'all' | 'open' | 'closed'
             Whether to include only a subset, or all issues.
         """
-        from .commits_ import update_commits
-        from .issues_ import update_issues
         if commits is True:
             update_commits(user, project=project, auth=self.auth,
                            since=since, max_pages=max_pages,
