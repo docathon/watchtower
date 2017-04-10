@@ -24,10 +24,11 @@ def colon_seperated_pair(arg):
 
 
 def get_frames(auth, url, max_pages=100, per_page=100,
-               **params):
+               verbose=False, **params):
     """Return all commit data from a URL"""
     entries = get_entries(auth, url, max_pages=max_pages,
-                          per_page=per_page, **params)
+                          per_page=per_page, verbose=verbose,
+                          **params)
     total = sum(entries, [])
     return total
 
@@ -49,7 +50,7 @@ def get_entries(auth, url, max_pages=100, per_page=100,
     per_page : int
         The number of commits to return per page.
     verbose : bool
-        Controls progress bar printing.
+        Controls progress bar display.
     params : dict-like
         Will be passed to requests.get
 

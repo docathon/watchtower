@@ -8,8 +8,8 @@ from ._config import get_data_home, get_API_token, DATETIME_FORMAT
 from .handlers_ import ProjectIssues
 
 
-def update_issues(user, project, auth=None,
-                  state="all", since=None, data_home=None):
+def update_issues(user, project, auth=None, state="all", since=None,
+                  data_home=None, verbose=False):
     """
     Updates the issues information for a user / project.
 
@@ -29,6 +29,8 @@ def update_issues(user, project, auth=None,
         Search for activity since this date
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
+    verbose : bool
+        Controls progress bar display.
 
     Returns
     -------
@@ -38,7 +40,8 @@ def update_issues(user, project, auth=None,
     auth = get_API_token(auth)
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues'.format(user, project)
-    raw = _github_api.get_frames(auth, url, state=state, since=since)
+    raw = _github_api.get_frames(auth, url, state=state, since=since,
+                                 verbose=verbose)
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)
     raw = raw.rename(columns={'created_at': 'date'})

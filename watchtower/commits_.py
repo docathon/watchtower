@@ -62,7 +62,8 @@ def load_commits(user, project=None, data_home=None,
 
 def update_commits(user, project=None, auth=None, since=None,
                    max_pages=100, per_page=100,
-                   data_home=None, branch=None, **params):
+                   data_home=None, branch=None,
+                   verbose=False, **params):
     """Update the commit data for a repository.
 
     Parameters
@@ -85,6 +86,8 @@ def update_commits(user, project=None, auth=None, since=None,
         The path to the watchtower data. Defaults to ~/watchtower_data.
     branch : string
         The branch fo the project to load.
+    verbose : bool
+        Controls progress bar display.
     params : dict-like
         Will be passed to `get_frames`.
 
@@ -114,6 +117,7 @@ def update_commits(user, project=None, auth=None, since=None,
     raw = _github_api.get_frames(auth, url, since=since,
                                  max_pages=max_pages,
                                  per_page=per_page,
+                                 verbose=verbose,
                                  **params)
     raw = pd.DataFrame(raw)
 
