@@ -1,11 +1,9 @@
 import os
 import pandas as pd
 from os.path import join
-from datetime import datetime
 
 from ._config import get_data_home, get_API_token, DATETIME_FORMAT
 from . import _github_api
-from .handlers_ import ProjectCommits
 
 
 def load_commits(user, project=None, data_home=None,
@@ -171,3 +169,50 @@ def find_word_in_string(string, queries=None):
             in_string += 1
     in_string = in_string > 0
     return in_string
+
+
+class ProjectCommits(object):
+    """Represent commit activity for a github project.
+
+    This stores information about commit activity.
+
+    Parameters
+    ----------
+    user : string
+        The user to query
+    project : string
+        The repository to query.
+    raw : json return by github api
+        The raw data for this project, as returned by the github api.
+
+    Attributes
+    ----------
+    commits : DataFrame
+        A collection of commit activity for this project.
+    """
+    def __init__(self, user, project, raw):
+        self.user = user
+        self.project = project
+        self.raw = raw
+
+        # Extract commits information that is useful
+        commits = dict(email=[], name=[], message=[], sha=[],
+                       date=[])
+
+        for commit, sha, date in raw[['commit', 'sha', 'date']].values:
+            commits['email'].append(commit['author']['email'])
+            commits['name'].append(commit['author']['name'])
+            commits['message'].append(commit['message'])
+            commits['sha'].append(sha)
+            commits['date'].append(date)
+        commits = pd.DataFrame(commits)
+        commits = commits.set_index('date')
+        commits.index = pd.to_datetime(commits.index)
+        commits['project'] = project
+        commits['user'] = user
+        self.commits = commits
+
+    def __repr__(self):
+        s = 'Project: {} / {} | N Events: {}'.format(
+            self.user, self.project, len(self.commits))
+        return s
