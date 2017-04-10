@@ -1,12 +1,19 @@
+"""
+=================================
+Identifying documentation commits
+=================================
+
+This example shows how to identify documentation specfic commits.
+
+"""
 from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
 
-projects = [('matplotlib', 'matplotlib'),
-            ('scikit-learn', 'scikit-learn'),
-            ('pandas-dev', 'pandas')]
+projects = [('docathon', 'watchtower'),
+            ('scikit-learn', 'scikit-learn')]
 
 
 def is_doc(string):
@@ -33,7 +40,7 @@ print(db)
 projects = [db.load(user, project) for user, project in projects]
 
 # Now plot pushes each day
-fig, axs = plt.subplots(3, 1, figsize=(10, 15), sharex=True, sharey=True)
+fig, axs = plt.subplots(nrows=2, figsize=(8, 6), sharex=True, sharey=True)
 for proj, ax in zip(projects, axs):
     proj.commits['is_doc'] = proj.commits['message'].apply(is_doc)
     proj.commits = proj.commits.query('date > @since')
@@ -43,8 +50,8 @@ for proj, ax in zip(projects, axs):
         replace(np.nan, 0).astype(int)
     ax.bar(all_commits.index, all_commits['is_doc'], label='all')
     ax.bar(doc_commits.index, doc_commits['is_doc'], label='doc')
-    ax.set_title(proj, fontsize=18)
-    ax.set_ylabel('N Commits')
+    ax.set_title("{}/{}".format(proj.user, proj.project), fontweight="bold")
+    ax.set_ylabel('# Commits', fontweight="bold")
 axs[-1].legend()
 plt.setp(axs[-1].get_xticklabels(), rotation=45, horizontalalignment='right')
 plt.setp([ax.xaxis.label for ax in axs], visible=False)

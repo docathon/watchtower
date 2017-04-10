@@ -1,8 +1,16 @@
+"""
+===================
+choldgraf vs NelleV
+===================
+
+This short example shows the number of commits per user across time.
+"""
+
 from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
 import os
 
-users = ['choldgraf', 'Carreau', 'NelleV']
+users = ['choldgraf', 'NelleV']
 auth = os.environ['GITHUB_API']
 
 # Initialize the database
@@ -20,7 +28,7 @@ users = [db.load(user) for user in users]
 fig, ax = plt.subplots(figsize=(10, 5))
 for user in users:
     counts = user.PushEvent.resample('D').count().iloc[:, 0]
-    counts.plot(ax=ax, label=user.user, lw=3, alpha=.5)
+    counts.plot(ax=ax, label=user.user, lw=3)
 ax.set_title('Commits for users')
 ax.xaxis.label.set(visible=False)
 ax.legend()

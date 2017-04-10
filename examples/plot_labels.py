@@ -1,19 +1,30 @@
+"""
+======
+Labels
+======
+
+In this small examples, we compare labels between the different projects:
+
+    - scikit-learn
+    - watchtower
+
+"""
 import numpy as np
 import pandas as pd
 from watchtower import issues_, labels_
 from watchtower import GithubDatabase
 import matplotlib.pyplot as plt
 
-projects = ("matplotlib", "scikit-learn", "scikit-image", "ipython", "numpy")
+projects = (("scikit-learn", "scikit-learn"),
+             ("docathon", "watchtower"))
 db = GithubDatabase()
 
-update_issues = False  # Do we update the database
-state = 'open'  # closed / open / all
+update_issues = True  # Do we update the database
 since = '2017-02-01'
-for project in projects:
-    user = project
+
+for user, project in projects:
     if update_issues is True:
-        db.update(user, project, state=state, since=since)
+        db.update(user, project)
 
     proj = db.load(user, project)
     if proj.issues is None:
