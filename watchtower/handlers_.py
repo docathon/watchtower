@@ -24,6 +24,8 @@ class GithubDatabase(object):
         specified by the github api, or a string that exists in os.environ,
         which points to a username:token pair. If None, defaults to
         `GITHUB_API`.
+    verbose : bool
+        Controls progress bar display.
 
     Attributes
     ----------
@@ -33,9 +35,10 @@ class GithubDatabase(object):
     users : list of strings
         A collection of users for which watchtower has data.
     """
-    def __init__(self, data_home=None, auth=None):
+    def __init__(self, data_home=None, auth=None, verbose=False):
 
         self.data_home = get_data_home(data_home)
+        self.verbose = verbose
         self._load_db()
 
         # Authentication
@@ -75,7 +78,7 @@ class GithubDatabase(object):
             update_commits(user, project=project, auth=self.auth,
                            since=since, max_pages=max_pages,
                            per_page=per_page, data_home=self.data_home,
-                           branch=branch)
+                           branch=branch, verbose=self.verbose)
         if issues is True and project is not None:
             update_issues(user, project, auth=self.auth, since=since,
                           data_home=self.data_home, state=issues_state)
@@ -106,12 +109,14 @@ class GithubDatabase(object):
             self.update(user, project,
                         since=since, max_pages=max_pages,
                         per_page=per_page,
-                        issues_state=issues_state)
+                        issues_state=issues_state,
+                        verbose=self.verbose)
         # Users
         for user in self.users:
             print(user)
             self.update(user, auth=self.auth, since=since, max_pages=max_pages,
-                        per_page=per_page, data_home=self.data_home)
+                        per_page=per_page, data_home=self.data_home,
+                        verbose=self.verbose)
 
     def load(self, user, project=None, branch=None):
         """Load data for a user / project.
