@@ -5,3 +5,4 @@ build
 .coverage
 dist
 *.egg-info
+doc/auto_examples

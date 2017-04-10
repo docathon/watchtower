@@ -30,7 +30,12 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+
+import sphinx_gallery
+
+extensions = [
+        'sphinx_gallery.gen_gallery',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -153,4 +158,13 @@ texinfo_documents = [
 ]
 
 
+
+sphinx_gallery_conf = {
+    'doc_module': 'watchtower',
+    'reference_url': {
+        'sklearn': None,
+        'matplotlib': 'http://matplotlib.org',
+        'numpy': 'http://docs.scipy.org/doc/numpy-1.6.0',
+        'scipy': 'http://docs.scipy.org/doc/scipy-0.11.0/reference'}
+}
 

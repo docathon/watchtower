@@ -3,6 +3,16 @@ WatchTower
 
 Let's hack on github's API.
 
+
+Dependencies
+------------
+
+Extra dependencies for the documentation
+
+- matplotlib
+- sphinx
+- sphinx-gallery
+
 Commits
 -------
 
