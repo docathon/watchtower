@@ -8,13 +8,11 @@ This short example shows the number of commits per user across time.
 
 from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
-import os
 
 users = ['choldgraf', 'NelleV']
-auth = os.environ['GITHUB_API']
 
 # Initialize the database
-db = GithubDatabase(auth=auth)
+db = GithubDatabase()
 
 # Update users and print the db
 for user in users:

@@ -10,7 +10,6 @@ from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
 
 projects = [('docathon', 'watchtower'),
             ('scikit-learn', 'scikit-learn')]
@@ -22,11 +21,10 @@ def is_doc(string):
     return is_doc
 
 
-auth = os.environ['GITHUB_API']
 update_db = True
 
 # Initialize the database
-db = GithubDatabase(auth=auth)
+db = GithubDatabase()
 
 # Update users and print the db
 since = '2017-02-10'
