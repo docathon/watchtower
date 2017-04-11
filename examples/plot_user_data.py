@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 users = ['choldgraf', 'NelleV']
 
 # Initialize the database
-db = GithubDatabase()
+db = GithubDatabase(verbose=True)
 
 # Update users and print the db
 for user in users:

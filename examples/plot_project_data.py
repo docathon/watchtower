@@ -24,7 +24,7 @@ def is_doc(string):
 update_db = True
 
 # Initialize the database
-db = GithubDatabase()
+db = GithubDatabase(verbose=True)
 
 # Update users and print the db
 since = '2017-02-10'
