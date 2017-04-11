@@ -16,14 +16,14 @@ import matplotlib.pyplot as plt
 
 projects = (("scikit-learn", "scikit-learn"),
             ("docathon", "watchtower"))
-db = GithubDatabase()
+db = GithubDatabase(verbose=True)
 
 update_issues = True  # Do we update the database
 since = '2017-02-01'
 
 for user, project in projects:
     if update_issues is True:
-        db.update(user, project)
+        db.update(user, project, since=since)
 
     proj = db.load(user, project)
     if proj.issues is None:
