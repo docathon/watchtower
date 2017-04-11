@@ -5,3 +5,7 @@ build
 .coverage
 dist
 *.egg-info
+
+doc/auto_examples
+doc/modules
+doc/_build

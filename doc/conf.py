@@ -30,7 +30,18 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+
+import sys
+
+sys.path.append("..")
+
+extensions = [
+        'sphinx_gallery.gen_gallery',
+        "sphinx.ext.doctest",
+        "sphinx.ext.autodoc",
+        "sphinx.ext.autosummary",
+        "numpydoc"
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,6 +51,11 @@ templates_path = ['_templates']
 #
 # source_suffix = ['.rst', '.md']
 source_suffix = '.rst'
+
+autodoc_default_flags = ['members', 'inherited-members']
+
+# generate autosummary even if no references
+autosummary_generate = True
 
 # The master toctree document.
 master_doc = 'index'
@@ -153,4 +169,11 @@ texinfo_documents = [
 ]
 
 
-
+sphinx_gallery_conf = {
+    'doc_module': 'watchtower',
+    'reference_url': {
+        'sklearn': None,
+        'matplotlib': 'http://matplotlib.org',
+        'numpy': 'http://docs.scipy.org/doc/numpy-1.6.0',
+        'scipy': 'http://docs.scipy.org/doc/scipy-0.11.0/reference'}
+}
