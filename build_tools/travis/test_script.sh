@@ -12,6 +12,7 @@ python --version
 python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import pandas; print('pandas %s' % pandas.__version__)"
 
+echo $GITHUB_API_TEST
 
 run_tests() {
     TEST_CMD="pytest --showlocals --pyargs"
