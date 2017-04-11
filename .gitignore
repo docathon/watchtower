@@ -8,3 +8,4 @@ dist
 
 doc/auto_examples
 doc/modules
+doc/_build

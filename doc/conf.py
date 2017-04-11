@@ -31,9 +31,6 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-import sphinx_gallery
-import numpydoc
-
 import sys
 
 sys.path.append("..")
@@ -172,7 +169,6 @@ texinfo_documents = [
 ]
 
 
-
 sphinx_gallery_conf = {
     'doc_module': 'watchtower',
     'reference_url': {
@@ -181,4 +177,3 @@ sphinx_gallery_conf = {
         'numpy': 'http://docs.scipy.org/doc/numpy-1.6.0',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.11.0/reference'}
 }
-

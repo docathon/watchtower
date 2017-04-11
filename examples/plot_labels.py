@@ -11,12 +11,11 @@ In this small examples, we compare labels between the different projects:
 """
 import numpy as np
 import pandas as pd
-from watchtower import issues_, labels_
 from watchtower import GithubDatabase
 import matplotlib.pyplot as plt
 
 projects = (("scikit-learn", "scikit-learn"),
-             ("docathon", "watchtower"))
+            ("docathon", "watchtower"))
 db = GithubDatabase()
 
 update_issues = True  # Do we update the database
