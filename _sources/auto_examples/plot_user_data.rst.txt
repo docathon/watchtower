@@ -64,7 +64,7 @@ This short example shows the number of commits per user across time.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  1.447 seconds)
+**Total running time of the script:** ( 0 minutes  1.801 seconds)
 
 
 
