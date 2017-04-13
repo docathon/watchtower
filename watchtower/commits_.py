@@ -157,7 +157,7 @@ def find_word_in_string(string, queries=None):
 
     Returns
     -------
-    in_strong : bool
+    in_string : bool
         Whether or not one of the queries was found.
     """
     queries = 'doc' if queries is None else queries
@@ -169,6 +169,16 @@ def find_word_in_string(string, queries=None):
             in_string += 1
     in_string = in_string > 0
     return in_string
+
+
+def is_doc(commits, use_message=True, use_files=True):
+    """
+    """
+    is_doc_message = commits.message.apply(lambda x: "doc" in x.lower())
+    is_doc_files = commits.added.apply(lambda x: "doc" in " ".join(x).lower())
+    is_doc = is_doc_message | is_doc_files
+    is_doc.rename("is_doc", inplace=True)
+    return is_doc
 
 
 class ProjectCommits(object):

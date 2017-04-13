@@ -7,6 +7,8 @@ Let's hack on github's API.
 Dependencies
 ------------
 
+- pytest
+
 Extra dependencies for the documentation
 
 - matplotlib
