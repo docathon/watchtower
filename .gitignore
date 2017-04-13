@@ -5,6 +5,7 @@ build
 .coverage
 dist
 *.egg-info
+watchtower/.cache
 
 doc/auto_examples
 doc/modules

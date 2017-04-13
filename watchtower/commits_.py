@@ -171,16 +171,6 @@ def find_word_in_string(string, queries=None):
     return in_string
 
 
-def is_doc(commits, use_message=True, use_files=True):
-    """
-    """
-    is_doc_message = commits.message.apply(lambda x: "doc" in x.lower())
-    is_doc_files = commits.added.apply(lambda x: "doc" in " ".join(x).lower())
-    is_doc = is_doc_message | is_doc_files
-    is_doc.rename("is_doc", inplace=True)
-    return is_doc
-
-
 class ProjectCommits(object):
     """Represent commit activity for a github project.
 

@@ -13,6 +13,7 @@ python -c "import numpy; print('numpy %s' % numpy.__version__)"
 python -c "import pandas; print('pandas %s' % pandas.__version__)"
 
 echo $GITHUB_API_TEST
+TEST_DIR=tmp_tests
 
 run_tests() {
     TEST_CMD="pytest --showlocals --pyargs"
@@ -22,14 +23,13 @@ run_tests() {
     # check if we do not leave artifacts
     mkdir -p $TEST_DIR
     # We need the setup.cfg for the nose settings
-    cp setup.cfg $TEST_DIR
-    cd $TEST_DIR
+    pushd $TEST_DIR
 
     if [[ "$COVERAGE" == "true" ]]; then
         TEST_CMD="$TEST_CMD --with-coverage"
     fi
     $TEST_CMD watchtower
-    
+    popd
 }
 
 if [[ "$RUN_FLAKE8" == "true" ]]; then
