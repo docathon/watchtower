@@ -11,6 +11,7 @@ Welcome to Watchtower's documentation!
    :caption: Contents:
 
   auto_examples/index
+  modules/classes
 
 
 Indices and tables
