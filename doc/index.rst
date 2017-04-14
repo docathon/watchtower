@@ -10,8 +10,8 @@ Welcome to Watchtower's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-  auto_examples/index
-  modules/classes
+   auto_examples/index
+   modules/classes
 
 
 Indices and tables

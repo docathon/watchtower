@@ -11,19 +11,22 @@ In this small examples, we compare labels between the different projects:
 """
 import numpy as np
 import pandas as pd
+from watchtower.datasets import dldata
 from watchtower import GithubDatabase
 import matplotlib.pyplot as plt
 
 projects = (("scikit-learn", "scikit-learn"),
             ("docathon", "watchtower"))
-db = GithubDatabase(verbose=True)
 
-update_issues = True  # Do we update the database
+
+# Fetches the test data if need be.
+dldata.fetch_test_data()
+# XXX this need to change to call something that is specifically the test data
+db = GithubDatabase(verbose=True, data_home="~/watchtower_data/test_data")
+
 since = '2017-02-01'
 
 for user, project in projects:
-    if update_issues is True:
-        db.update(user, project, since=since)
 
     proj = db.load(user, project)
     if proj.issues is None:

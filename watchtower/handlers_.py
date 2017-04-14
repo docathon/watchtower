@@ -20,11 +20,13 @@ class GithubDatabase(object):
     ----------
     data_home : string | None
         The path to the watchtower data. Defaults to ~/watchtower_data
+
     auth : string | None
         If a string, must be either a combination of username:token as
         specified by the github api, or a string that exists in os.environ,
         which points to a username:token pair. If None, defaults to
         `GITHUB_API`.
+
     verbose : bool
         Controls progress bar display.
 
@@ -33,10 +35,12 @@ class GithubDatabase(object):
     projects : list of strings
         A collection of projects for which watchtower has data. These are
         listed as repo/project pairs.
+
     users : list of strings
         A collection of users for which watchtower has data.
     """
-    def __init__(self, data_home=None, auth=None, verbose=False):
+    def __init__(self, data_home=None, auth=None, verbose=False,
+                 test_data=False):
 
         self.data_home = get_data_home(data_home)
         self.verbose = verbose
@@ -57,19 +61,26 @@ class GithubDatabase(object):
         ----------
         user : string
             user or organization name, e.g. "matplotlib"
+
         project : string | None
             project name, e.g, "matplotlib". If None, user
             information will be loaded.
+
         commits : bool
             Whether to update commits for this user/project
+
         issues : bool
             Whether to update issues for this user/project
+
         since : string of form "YYYY-MM-DD"
             Only update with data after this date.
+
         max_pages : int
             Maximum number of pages to query from the github api.
+
         per_page : int
             Number of items to return per page
+
         issues_state : 'all' | 'open' | 'closed'
             Whether to include only a subset, or all issues.
         """
@@ -91,14 +102,19 @@ class GithubDatabase(object):
         ----------
         commits : bool
             Whether to update commits for this user/project
+
         issues : bool
             Whether to update issues for this user/project
+
         since : string of form "YYYY-MM-DD"
             Only update with data after this date.
+
         max_pages : int
             Maximum number of pages to query from the github api.
+
         per_page : int
             Number of items to return per page
+
         issues_state : 'all' | 'open' | 'closed'
             Whether to include only a subset, or all issues.
         """
@@ -124,6 +140,7 @@ class GithubDatabase(object):
         ----------
         user : string
             The user to query
+
         project : string | None
             The repository to query. If None, only user data will be loaded.
 
@@ -135,8 +152,6 @@ class GithubDatabase(object):
         from .commits_ import load_commits
         if project is None:
             raw = load_commits(user, project=project, data_home=self.data_home)
-            if raw is None:
-                raise ValueError('No data exists for this user/project')
             return UserActivity(user, raw)
         else:
             return ProjectActivity(user, project, branch=branch)
@@ -177,8 +192,10 @@ class UserActivity(object):
     ----------
     PushEvent : DataFrame
         A collection of Push events for this user
+
     CreateEvent : DataFrame
         A collection of issue creation events for this user.
+
     PullRequestEvent : DataFrame
         A collection of pull request events for this user.
     """
@@ -205,8 +222,10 @@ class ProjectActivity(object):
     ----------
     user : string
         The user to query
+
     project : string
         The repository to query.
+
     branch : string
         The branch fo the project to load.
 
@@ -214,9 +233,12 @@ class ProjectActivity(object):
     ----------
     handlers : dictionary
         A dictionary containing the handler objects for thie project's data
+
     issues : DataFrame
         A collection of issue information for this project.
+
     commits : DataFrame
+
         A collection of commit activity for this project.
     """
     def __init__(self, user, project, branch=None):
@@ -230,7 +252,8 @@ class ProjectActivity(object):
         self.handlers = {}
         self.handlers['issues'] = load_issues(user, project, use_handler=True)
         self.handlers['commits'] = load_commits(
-            user, project, branch=branch, use_handler=True)
+            user, project, branch=branch, use_handler=True,
+            data_home=self.data_home)
         if self.handlers['issues'] is not None:
             self.issues = self.handlers['issues'].issues
         else:

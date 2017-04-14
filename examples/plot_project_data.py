@@ -3,13 +3,15 @@
 Identifying documentation commits
 =================================
 
-This example shows how to identify documentation specfic commits.
+This example shows how to identify documentation specific commits.
 
 """
+
 from watchtower.handlers_ import GithubDatabase
+from watchtower.datasets import dldata
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+
 
 projects = [('docathon', 'watchtower'),
             ('scikit-learn', 'scikit-learn')]
@@ -21,18 +23,12 @@ def is_doc(string):
     return is_doc
 
 
-update_db = True
+# Fetches the test data if need be.
+dldata.fetch_test_data()
+# XXX this need to change to call something that is specifically the test data
+db = GithubDatabase(verbose=True, data_home="~/watchtower_data/test_data")
 
-# Initialize the database
-db = GithubDatabase(verbose=True)
-
-# Update users and print the db
 since = '2017-02-10'
-if update_db is True:
-    for user, project in projects:
-        db.update(user, project, since=since)
-since = pd.to_datetime(since)
-print(db)
 
 # Load the data for plotting
 projects = [db.load(user, project) for user, project in projects]

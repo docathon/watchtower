@@ -42,16 +42,13 @@ def load_commits(user, project=None, data_home=None,
     else:
         filepath = join(data_home, 'projects', user, project,
                         'branches', branch, 'commits.json')
-    try:
-        commits = pd.read_json(filepath)
-        commits['date'] = pd.to_datetime(commits['date'].values)\
-            .tz_localize('UTC')\
-            .tz_convert('US/Pacific')
-        if len(commits) == 0:
-            raise ValueError('No commits for this project')
-    except ValueError as e:
-        print(e)
-        return None
+    commits = pd.read_json(filepath)
+    commits['date'] = pd.to_datetime(commits['date'].values)\
+        .tz_localize('UTC')\
+        .tz_convert('US/Pacific')
+    if len(commits) == 0:
+        raise ValueError('No commits for project %s/%s in %s' % (
+            user, project, data_home))
 
     if use_handler is False:
         return commits

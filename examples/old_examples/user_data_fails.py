@@ -6,18 +6,16 @@ choldgraf vs NelleV
 This short example shows the number of commits per user across time.
 """
 
+from watchtower.datasets import dldata
 from watchtower.handlers_ import GithubDatabase
 import matplotlib.pyplot as plt
 
 users = ['choldgraf', 'NelleV']
 
-# Initialize the database
-db = GithubDatabase(verbose=True)
-
-# Update users and print the db
-for user in users:
-    db.update(user)
-print(db)
+# Fetches the test data if need be.
+dldata.fetch_test_data()
+# XXX this need to change to call something that is specifically the test data
+db = GithubDatabase(verbose=True, data_home="~/watchtower_data/test_data")
 
 # Load the data for plotting
 users = [db.load(user) for user in users]
