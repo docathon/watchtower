@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from watchtower._config import get_data_home, clear_data_home
+from watchtower.datasets import get_data_home, clear_data_home
 
 from watchtower.utils.testing import assert_true, assert_false
 from watchtower.utils.testing import assert_equal
