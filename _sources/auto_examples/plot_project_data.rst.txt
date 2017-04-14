@@ -25,7 +25,7 @@ This example shows how to identify documentation specfic commits.
     Params: {'since': '2017-02-10', 'per_page': 100}
     Updating repository: https://api.github.com/repos/scikit-learn/scikit-learn/commits
     Params: {'since': '2017-02-10', 'per_page': 100}
-    User Database | 0 Users | 2 projects
+    User Database | 2 Users | 2 projects
 
 
 
@@ -85,7 +85,7 @@ This example shows how to identify documentation specfic commits.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  3.701 seconds)
+**Total running time of the script:** ( 0 minutes  3.380 seconds)
 
 
 

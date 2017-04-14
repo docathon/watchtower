@@ -22,10 +22,8 @@ This short example shows the number of commits per user across time.
 
     Updating repository: https://api.github.com/users/choldgraf/events
     Params: {'since': None, 'per_page': 100}
-    Expected object or value
     Updating repository: https://api.github.com/users/NelleV/events
     Params: {'since': None, 'per_page': 100}
-    Expected object or value
     User Database | 2 Users | 2 projects
 
 
@@ -64,7 +62,7 @@ This short example shows the number of commits per user across time.
     plt.tight_layout()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  1.801 seconds)
+**Total running time of the script:** ( 0 minutes  2.998 seconds)
 
 
 

@@ -36,10 +36,8 @@ In this small examples, we compare labels between the different projects:
 
     Updating repository: https://api.github.com/repos/scikit-learn/scikit-learn/commits
     Params: {'since': '2017-02-01', 'per_page': 100}
-    Expected object or value
     Updating repository: https://api.github.com/repos/docathon/watchtower/commits
     Params: {'since': '2017-02-01', 'per_page': 100}
-    Expected object or value
 
 
 
@@ -111,7 +109,7 @@ In this small examples, we compare labels between the different projects:
         ax.legend()
     plt.show()
 
-**Total running time of the script:** ( 0 minutes  4.129 seconds)
+**Total running time of the script:** ( 0 minutes  3.375 seconds)
 
 
 
