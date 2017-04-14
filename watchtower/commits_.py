@@ -2,7 +2,8 @@ import os
 import pandas as pd
 from os.path import join
 
-from ._config import get_data_home, get_API_token, DATETIME_FORMAT
+from .datasets import get_data_home
+from ._config import get_API_token, DATETIME_FORMAT
 from . import _github_api
 
 

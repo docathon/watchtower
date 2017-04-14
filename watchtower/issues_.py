@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 
 from . import _github_api
-from ._config import get_data_home, get_API_token, DATETIME_FORMAT
+from .datasets import get_data_home
+from ._config import get_API_token, DATETIME_FORMAT
 
 
 def update_issues(user, project, auth=None, state="all", since=None,

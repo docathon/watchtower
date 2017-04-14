@@ -2,8 +2,8 @@ from glob import glob
 import os
 import os.path as op
 import pandas as pd
-import numpy as np
-from ._config import get_data_home, get_API_token
+from .datasets import get_data_home
+from ._config import get_API_token
 from .commits_ import update_commits
 from .issues_ import update_issues
 
