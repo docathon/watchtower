@@ -44,9 +44,8 @@ def update_issues(user, project, auth=None, state="all", since=None,
                                  verbose=verbose)
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)
-    raw = raw.rename(columns={'created_at': 'date'})
 
-    filename = os.path.join(path, 'projects', user, project, "issues.json")
+    filename = os.path.join(path, user, project, "issues.json")
 
     # Update pre-existing data
     old_raw = load_issues(user, project, data_home=data_home)
@@ -71,8 +70,7 @@ def load_issues(user, project, data_home=None,
     user : string
         user or organization name, e.g. "matplotlib"
     project : string
-        project name, e.g, "matplotlib". If None, user
-        information will be loaded.
+        project name, e.g, "matplotlib". 
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
     use_handler : bool
@@ -90,21 +88,14 @@ def load_issues(user, project, data_home=None,
     # Maybe we could store premantly only the closed issues and update the
     # rest?
     data_home = get_data_home(data_home)
-    filepath = join(data_home, 'projects', user, project, "issues.json")
-
+    filepath = join(data_home, user, project, "issues.json")
     try:
         issues = pd.read_json(filepath)
         if len(issues) == 0:
             return None
-        issues['date'] = pd.to_datetime(issues['date'].values)\
-            .tz_localize('UTC')\
-            .tz_convert('US/Pacific')
     except ValueError:
         return None
-    if use_handler is False:
-        return issues
-    else:
-        return ProjectIssues(user, project, issues)
+    return issues
 
 
 class ProjectIssues(object):
