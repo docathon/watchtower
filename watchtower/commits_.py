@@ -133,7 +133,7 @@ def update_commits(user, project=None, auth=None, since=None,
     return load_commits(user, project, data_home=data_home, branch=branch)
 
 
-def is_doc(commits, use_message=True, use_files=True):
+def is_doc(commits, use_message=True, use_files=False):
     """
     Find commits that are documentation related.
 
@@ -144,13 +144,17 @@ def is_doc(commits, use_message=True, use_files=True):
 
     use_message : bool, optional, default: True
 
-    use_files: bool, optional, default: True
+    use_files: bool, optional, default: False
+
     """
-    is_doc_message = commits.message.apply(
-        lambda x: "doc" in x.lower())
-    is_doc_files = commits.added.apply(
-            lambda x: "doc" in " ".join(x).lower())
-    is_doc = is_doc_message | is_doc_files
+    is_doc_message = commits.commit.apply(
+        lambda x: "doc" in x["message"].lower())
+    if use_files:
+        # We somehow lost the file information in the battle. No clue why...
+        raise NotImplementedError
+        # is_doc_files = commits.added.apply(
+        #         lambda x: "doc" in " ".join(x).lower())
+    is_doc = is_doc_message
     is_doc.rename("is_doc", inplace=True)
     return is_doc
 
