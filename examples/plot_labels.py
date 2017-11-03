@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 projects = (("scikit-learn", "scikit-learn"),
             ("docathon", "watchtower"))
 
-update_issues = False  # Do we update the database
+update_issues = True  # Do we update the database
 since = '2017-02-01'
 
 for user, project in projects:
@@ -65,4 +65,3 @@ for user, project in projects:
     ax.set_title(project, fontweight="bold")
 
     ax.legend()
-plt.show()
