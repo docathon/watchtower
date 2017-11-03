@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from . import _github_api
-from ._config import get_data_home, get_API_token, DATETIME_FORMAT
+from ._config import get_data_home, get_API_token
 
 
 def update_issues(user, project, auth=None, state="all", since=None,
@@ -17,18 +17,24 @@ def update_issues(user, project, auth=None, state="all", since=None,
     ----------
     user : string
         user or organization name, e.g. "matplotlib"
+
     project : string
-        project name, e.g, "matplotlib". If None, user
-        information will be loaded.
+        project name, e.g, "matplotlib". If None, project will be set to
+        user.
+
     auth : string (user:api_key)
         The username / API key for github, separated by a colon. If
         None, the key `GITHUB_API` will be searched for in `environ`.
+
     state : 'all' | 'open' | 'closed'
         Whether to include only a subset, or all issues.
+
     since : string
         Search for activity since this date
+
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
+
     verbose : bool
         Controls progress bar display.
 
@@ -45,6 +51,8 @@ def update_issues(user, project, auth=None, state="all", since=None,
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)
 
+    if project is None:
+        project = user
     filename = os.path.join(path, user, project, "issues.json")
 
     # Update pre-existing data
@@ -56,12 +64,12 @@ def update_issues(user, project, auth=None, state="all", since=None,
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    raw.to_json(filename, date_format=DATETIME_FORMAT)
+    raw.to_json(filename)
     return load_issues(user, project, data_home=data_home)
 
 
 def load_issues(user, project, data_home=None,
-                use_handler=False):
+                state="all"):
     """
     Reads the commits json files from the data folder.
 
@@ -69,13 +77,12 @@ def load_issues(user, project, data_home=None,
     ----------
     user : string
         user or organization name, e.g. "matplotlib"
+
     project : string
-        project name, e.g, "matplotlib". 
+        project name, e.g, "matplotlib".
+
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
-    use_handler : bool
-        Whether to return data as one of the objects in
-        `watchtower.handlers_`
 
     Returns
     -------
@@ -107,8 +114,10 @@ class ProjectIssues(object):
     ----------
     user : string
         The user to query
+
     project : string
         The repository to query.
+
     raw : json return by github api
         The raw data for this project, as returned by the github api.
 

@@ -11,32 +11,28 @@ In this small examples, we compare labels between the different projects:
 """
 import numpy as np
 import pandas as pd
-from watchtower import GithubDatabase
+from watchtower import issues_
 import matplotlib.pyplot as plt
 
 projects = (("scikit-learn", "scikit-learn"),
             ("docathon", "watchtower"))
-db = GithubDatabase(verbose=True)
 
-update_issues = True  # Do we update the database
+update_issues = False  # Do we update the database
 since = '2017-02-01'
 
 for user, project in projects:
     if update_issues is True:
-        db.update(user, project, since=since)
+        all_issues = issues_.update_issues(user, project)
+    else:
+        all_issues = issues_.load_issues(user, project)
 
-    proj = db.load(user, project)
-    if proj.issues is None:
-        print('No data for {}'.format(project))
-        continue
-    all_issues = proj.issues
-    open_issues = all_issues.query('state == "open"')
-
+    open_issues = all_issues[all_issues["state"] == "open"]
     # Extract the names of the labels
-    all_labels = np.array([name for names in all_issues['label_names'].values
-                           for name in names])
-    open_labels = np.array([name for names in open_issues['label_names'].values
-                            for name in names])
+    all_labels = np.array([label["name"] for labels in all_issues['labels']
+                           for label in labels])
+    open_labels = np.array([label["name"] for labels in open_issues['labels']
+                           for label in labels])
+
     unique_labels = np.unique(all_labels)
     counts = dict()
     for label in unique_labels:
