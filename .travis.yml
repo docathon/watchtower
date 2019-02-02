@@ -18,4 +18,4 @@ env:
     # Directory tests are ran from
     - TEST_DIR=/tmp/watchtower
   matrix:
-    - BUILD_DOC=true SKIP_TESTS=false RUN_FLAKE8=true
+    - BUILD_DOC=false SKIP_TESTS=false RUN_FLAKE8=true
