@@ -40,7 +40,7 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     run_tests
 fi
 
-if [[ "$BUILD_DOC" == "true" ]]; then
+if [[ "$BUILD_DOC" == "true" ]] && [["$TRAVIS_PULL_REQUEST" != "false"]]; then
   pushd doc
   make html
   popd
