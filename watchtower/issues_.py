@@ -8,7 +8,8 @@ from ._config import get_data_home, get_API_token
 
 
 def update_issues(user, project, auth=None, state="all", since=None,
-                  data_home=None, verbose=False):
+                  data_home=None, verbose=False, max_pages=100,
+                  per_page=100):
     """
     Updates the issues information for a user / project.
 
@@ -46,6 +47,7 @@ def update_issues(user, project, auth=None, state="all", since=None,
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues'.format(user, project)
     raw = _github_api.get_frames(auth, url, state=state, since=since,
+                                 max_page=max_pages, per_page=per_page,
                                  verbose=verbose)
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)
