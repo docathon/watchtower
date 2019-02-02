@@ -21,13 +21,12 @@ run_tests() {
     # and
     # check if we do not leave artifacts
     mkdir -p $TEST_DIR
-    # We need the setup.cfg for the nose settings
-    cp setup.cfg $TEST_DIR
     cd $TEST_DIR
 
     if [[ "$COVERAGE" == "true" ]]; then
-        TEST_CMD="$TEST_CMD --with-coverage"
+        TEST_CMD="$TEST_CMD --cov watchtower"
     fi
+    set -x # print executed command to the terminal
     $TEST_CMD watchtower
     
 }
@@ -40,7 +39,7 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     run_tests
 fi
 
-if [[ "$BUILD_DOC" == "true" ]] && [["$TRAVIS_PULL_REQUEST" != "false"]]; then
+if [[ "$BUILD_DOC" == "true" ]] && [["$TRAVIS_PULL_REQUEST" != "true"]]; then
   pushd doc
   make html
   popd
