@@ -21,13 +21,13 @@ run_tests() {
     # and
     # check if we do not leave artifacts
     mkdir -p $TEST_DIR
-    cd $TEST_DIR
+    pushd $TEST_DIR
 
     if [[ "$COVERAGE" == "true" ]]; then
         TEST_CMD="$TEST_CMD --cov watchtower"
     fi
-    set -x # print executed command to the terminal
     $TEST_CMD watchtower
+    popd
     
 }
 
