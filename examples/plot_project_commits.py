@@ -21,12 +21,12 @@ update_db = False
 # Initialize the database
 
 # Update users and print the db
-since = '2017-02-10'
+since = '2019-01-10'
 if update_db is True:
     for user, project in projects:
-        # db.update(user, project, since=since)
-        # FIXME
-        pass
+        all_commits = commits_.update_commits(
+            user, project, verbose=True,
+            max_pages=1, per_page=10)
 
 since = pd.to_datetime(since)
 
