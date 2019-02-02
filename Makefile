@@ -1,6 +1,6 @@
 PYTHON ?= python
 CYTHON ?= cython
-NOSETESTS ?= nosetests
+PYTEST ?= pytest
 CTAGS ?= ctags
 
 all: test
@@ -12,11 +12,11 @@ inplace:
 test: test-code
 
 test-code: in
-	$(NOSETESTS) -s -v watchtower
+	$(PYTEST) -s -v watchtower
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(NOSETESTS) -s -v --with-coverage --cover-package=watchtower watchtower
+	$(PYTEST) -s -v --with-coverage --cover-package=watchtower watchtower
 
 flake:
 	@if command -v flake8 > /dev/null; then \

@@ -10,6 +10,7 @@
 set -e
 pip install doctr sphinx numpydoc pillow matplotlib numpy pandas
 pip install sphinx_gallery
+pip install pytest
 
 
 if [[ "$COVERAGE" == "true" ]]; then
