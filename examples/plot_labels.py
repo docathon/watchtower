@@ -17,14 +17,12 @@ import matplotlib.pyplot as plt
 projects = (("scikit-learn", "scikit-learn"),
             ("docathon", "watchtower"))
 
-update_issues = True  # Do we update the database
-since = '2017-02-01'
+since = '2018-06-01'
 
 for user, project in projects:
-    if update_issues is True:
-        all_issues = issues_.update_issues(user, project)
-    else:
-        all_issues = issues_.load_issues(user, project)
+    all_issues = issues_.update_issues(
+        user, project, verbose=True,
+        max_pages=1, per_page=50)
 
     open_issues = all_issues[all_issues["state"] == "open"]
     # Extract the names of the labels
