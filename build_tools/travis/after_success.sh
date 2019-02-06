@@ -15,6 +15,5 @@ if [[ "$COVERAGE" == "true" ]]; then
     # very reliable but we don't want travis to report a failure
     # in the github UI just because the coverage report failed to
     # be published.
-    pip install codecov
     codecov --root $TRAVIS_BUILD_DIR || echo "codecov upload failed"
 fi
