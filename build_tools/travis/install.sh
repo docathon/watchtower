@@ -14,7 +14,7 @@ pip install pytest
 
 
 if [[ "$COVERAGE" == "true" ]]; then
-    pip install coverage codecov
+    pip install pytest-cov codecov
 fi
 
 # Build watchtower in the install.sh script to collapse the verbose

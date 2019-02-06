@@ -18,4 +18,6 @@ env:
     # Directory tests are ran from
     - TEST_DIR=/tmp/watchtower
   matrix:
-    - BUILD_DOC=false SKIP_TESTS=false RUN_FLAKE8=true
+    - BUILD_DOC=false SKIP_TESTS=false RUN_FLAKE8=true COVERAGE=true
+
+after_success: bash build_tools/travis/after_success.sh
