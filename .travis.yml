@@ -19,3 +19,5 @@ env:
     - TEST_DIR=/tmp/watchtower
   matrix:
     - BUILD_DOC=false SKIP_TESTS=false RUN_FLAKE8=true
+
+after_success: bash build_tools/travis/after_success.sh
