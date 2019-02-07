@@ -7,6 +7,7 @@ Mostly this is some copy paste of github_state's code
 
 import requests
 import collections
+import warnings
 from tqdm import tqdm
 from requests.exceptions import HTTPError
 from pandas import to_datetime
@@ -80,8 +81,9 @@ def get_entries(auth, url, max_pages=100, per_page=100,
                 # empty list
                 break
             yield json
-        except HTTPError:
+        except HTTPError as e:
             # Github sometimes just throws an error
+            warnings.warn("Latest request raised an error: %s" % e)
             break
 
 

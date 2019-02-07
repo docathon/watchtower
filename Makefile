@@ -19,7 +19,7 @@ test-code: in
 	$(PYTEST) --showlocals -v watchtower --durations=20
 
 test-doc:
-	$(PYTEST) $(shell find doc -name '*.rst' | sort)
+	#$(PYTEST) $(shell find doc -name '*.rst' | sort)
 
 test-coverage:
 	rm -rf coverage .coverage
