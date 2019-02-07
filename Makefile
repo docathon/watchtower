@@ -1,29 +1,36 @@
 PYTHON ?= python
-CYTHON ?= cython
 PYTEST ?= pytest
-CTAGS ?= ctags
 
-all: test
 
-in: inplace
+all: clean inplace test
 
-inplace:	
+clean-ctags:
+	rm -f tags
 
-test: test-code
+clean: clean-ctags
+	$(PYTHON) setup.py clean
+	rm -rf dist
+
+in: inplace # just a shortcut
+inplace:
+	$(PYTHON) setup.py build_ext -i
 
 test-code: in
-	$(PYTEST) -s -v watchtower
+	$(PYTEST) --showlocals -v watchtower --durations=20
+
+test-doc:
+	$(PYTEST) $(shell find doc -name '*.rst' | sort)
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(PYTEST) -s -v --with-coverage --cover-package=watchtower watchtower
+	$(PYTEST) watchtower --showlocals -v --cov=watchtower --cov-report=html:coverage
 
-flake:
-	@if command -v flake8 > /dev/null; then \
-		echo "Running flake8"; \
-		flake8 --count watchtower examples; \
-	else \
-		echo "flake8 not found, please install it!"; \
-		exit 1; \
-	fi;
-	@echo "flake8 passed"
+test: test-code test-doc
+
+
+doc: inplace
+	$(MAKE) -C doc html
+
+flake8-diff:
+	./build_tools/travis/flake8_diff.sh
+

@@ -43,7 +43,7 @@ def update_issues(user, project, auth=None, state="all", since=None,
     raw : json
         The json string containing all the issue information
     """
-    auth = get_API_token(auth)
+    auth = get_API_token() if auth is None else auth
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues'.format(user, project)
     raw = _github_api.get_frames(auth, url, state=state, since=since,
