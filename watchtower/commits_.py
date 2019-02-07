@@ -92,7 +92,7 @@ def update_commits(user, project=None, auth=None, since=None,
         The raw json returned by the github API.
     """
     path = get_data_home(data_home=data_home)
-    auth = get_API_token(auth) if auth is None else auth
+    auth = get_API_token() if auth is None else auth
     auth = _github_api.colon_seperated_pair(auth)
     api_root = 'https://api.github.com/'
     url = api_root + 'repos/{}/{}/commits'.format(

@@ -48,7 +48,7 @@ def get_data_home(data_home=None):
     return data_home
 
 
-def get_API_token(token_key):
+def get_API_token(token_key="GITHUB_API"):
     """Return the API token.
 
     Parameters
@@ -61,15 +61,13 @@ def get_API_token(token_key):
     Returns
     -------
     token : string
-        The github API token
+        The github API token if found, else None
     """
-    # XXX add support for keychain lookup as well?
-    token_key = 'GITHUB_API' if token_key is None else token_key
     if token_key in environ:
         token = environ.get(token_key)
     else:
-        # Assume the string is already a key
-        token = token_key
+        # Return None
+        token = None
     return token
 
 
