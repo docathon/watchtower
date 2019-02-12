@@ -6,7 +6,6 @@ import pandas as pd
 from . import _github_api
 from ._config import get_data_home, get_API_token
 
-
 def update_comments(user, project, auth=None, state="all", since=None,
                     data_home=None, verbose=False, max_page=100, per_page=500):
     """
@@ -65,7 +64,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    raw.to_json(filename)
+    raw.to_json(filename, date_format="iso")
     return load_comments(user, project, data_home=data_home)
 
 

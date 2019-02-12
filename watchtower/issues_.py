@@ -65,7 +65,7 @@ def update_issues(user, project, auth=None, state="all", since=None,
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    raw.to_json(filename)
+    raw.to_json(filename, date_format="iso")
     return load_issues(user, project, data_home=data_home)
 
 

@@ -129,7 +129,7 @@ def update_commits(user, project=None, auth=None, since=None,
         pass
 
     # Save + return
-    raw.to_json(filename)
+    raw.to_json(filename, date_format="iso")
     return load_commits(user, project, data_home=data_home, branch=branch)
 
 
