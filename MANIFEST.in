@@ -1,0 +1,2 @@
+recursive-include watchtower *.py
+recursive-include *.json
