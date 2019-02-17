@@ -50,6 +50,7 @@ def load_commits(user, project=None, data_home=None,
 def update_commits(user, project=None, auth=None, since=None,
                    max_pages=100, per_page=100,
                    data_home=None, branch="master",
+                   direction="asc",
                    verbose=False, **params):
     """Update the commit data for a repository.
 
@@ -80,6 +81,9 @@ def update_commits(user, project=None, auth=None, since=None,
 
     branch : string, optional, default: "master"
         The branch fo the project to load.
+
+    direction : ["asc", "desc"]
+        Whether to download oldest or newest commits first.
 
     verbose : bool
         Controls progress bar display.

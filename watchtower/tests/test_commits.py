@@ -6,6 +6,7 @@ import pandas as pd
 from watchtower.commits_ import is_doc
 from watchtower._config import clear_data_home
 from watchtower.commits_ import load_commits
+from watchtower.datasets import _fake_datasets
 from watchtower.utils.testing import assert_true, assert_equal
 from watchtower.utils.testing import assert_false
 
@@ -33,6 +34,6 @@ def test_load_commits():
     assert_equal(commits, None)
 
     # Now use some mockdata
-    data_home = os.path.join(dirname(__file__), "../mockdata")
+    data_home = _fake_datasets.get_mock_directory_path()
     commits = load_commits("matplotlib", "matplotlib", data_home=data_home)
     assert_true(len(commits) == 3)

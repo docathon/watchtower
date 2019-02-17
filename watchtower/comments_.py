@@ -9,7 +9,9 @@ from ._io import _update_and_save
 
 
 def update_comments(user, project, auth=None, state="all", since=None,
-                    data_home=None, verbose=False, max_page=100, per_page=500):
+                    data_home=None, verbose=False,
+                    direction="desc",
+                    max_pages=100, per_page=500):
     """
     Updates the comments information for a user / project.
 
@@ -32,6 +34,9 @@ def update_comments(user, project, auth=None, state="all", since=None,
     since : string
         Search for activity since this date
 
+    direction : ["asc", "desc"]
+        Whether to download oldest or newes comments first.
+
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
 
@@ -48,7 +53,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
     url = 'https://api.github.com/repos/{}/{}/issues/comments'.format(
         user, project)
     raw = _github_api.get_frames(auth, url, state=state, since=since,
-                                 max_page=max_page, per_page=per_page,
+                                 max_pages=max_pages, per_page=per_page,
                                  verbose=verbose)
     path = get_data_home(data_home=data_home)
     raw = pd.DataFrame(raw)

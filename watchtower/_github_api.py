@@ -25,16 +25,18 @@ def colon_seperated_pair(arg):
 
 
 def get_frames(auth, url, max_pages=100, per_page=100,
-               verbose=False, **params):
+               verbose=False, direction="asc", **params):
     """Return all commit data from a URL"""
     entries = get_entries(auth, url, max_pages=max_pages,
                           per_page=per_page, verbose=verbose,
+                          direction=direction,
                           **params)
     total = sum(entries, [])
     return total
 
 
 def get_entries(auth, url, max_pages=100, per_page=100,
+                direction="asc",
                 verbose=False, **params):
     """
     Get entries from GitHub
@@ -52,6 +54,8 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         The number of commits to return per page.
     verbose : bool
         Controls progress bar display.
+    direction : string, optional, default="asc"
+        "asc" or "desc"
     params : dict-like
         Will be passed to requests.get
 
@@ -65,6 +69,7 @@ def get_entries(auth, url, max_pages=100, per_page=100,
     iter_indices = range(1, max_pages + 1)
     if 'per_page' not in params.keys():
         params['per_page'] = per_page
+    params["direction"] = direction
     if verbose is True:
         print('Updating repository: {}\nParams: {}'.format(url, params))
         iter_indices = tqdm(iter_indices)
