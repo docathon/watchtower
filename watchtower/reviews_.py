@@ -75,7 +75,7 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
         pass
     raw.set_index("id", inplace=True)
     raw["id"] = raw.index
-    raw.to_json(filename)
+    raw.to_json(filename, date_format="iso")
     return load_reviews(user, project, data_home=data_home)
 
 

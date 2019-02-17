@@ -5,6 +5,7 @@ import pandas as pd
 
 from . import _github_api
 from ._config import get_data_home, get_API_token
+from ._io import _update_and_save
 
 
 def update_comments(user, project, auth=None, state="all", since=None,
@@ -58,6 +59,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
 
     # Update pre-existing data
     old_raw = load_comments(user, project, data_home=data_home)
+    _update_and_save(filename, raw, old_raw)
     if old_raw is not None:
         raw = pd.concat([raw, old_raw], ignore_index=True)
         raw = raw.drop_duplicates(subset=['id'])
@@ -65,7 +67,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
         os.makedirs(os.path.dirname(filename))
     except OSError:
         pass
-    raw.to_json(filename)
+    raw.to_json(filename, date_format="iso")
     return load_comments(user, project, data_home=data_home)
 
 
