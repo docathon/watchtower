@@ -5,6 +5,8 @@ import pandas as pd
 
 from . import _github_api
 from ._config import get_data_home, get_API_token
+from ._io import _update_and_save
+
 
 def update_comments(user, project, auth=None, state="all", since=None,
                     data_home=None, verbose=False, max_page=100, per_page=500):
@@ -57,6 +59,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
 
     # Update pre-existing data
     old_raw = load_comments(user, project, data_home=data_home)
+    _update_and_save(filename, raw, old_raw)
     if old_raw is not None:
         raw = pd.concat([raw, old_raw], ignore_index=True)
         raw = raw.drop_duplicates(subset=['id'])

@@ -5,6 +5,7 @@ import pandas as pd
 
 from . import _github_api
 from ._config import get_data_home, get_API_token
+from ._io import _update_and_save
 
 
 def update_issues(user, project, auth=None, state="all", since=None,
@@ -58,14 +59,7 @@ def update_issues(user, project, auth=None, state="all", since=None,
 
     # Update pre-existing data
     old_raw = load_issues(user, project, data_home=data_home)
-    if old_raw is not None:
-        raw = pd.concat([raw, old_raw], ignore_index=True)
-        raw = raw.drop_duplicates(subset=['id'])
-    try:
-        os.makedirs(os.path.dirname(filename))
-    except OSError:
-        pass
-    raw.to_json(filename, date_format="iso")
+    _update_and_save(filename, raw, old_raw)
     return load_issues(user, project, data_home=data_home)
 
 

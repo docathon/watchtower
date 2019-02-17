@@ -4,6 +4,7 @@ from os.path import join
 
 from ._config import get_data_home, get_API_token
 from . import _github_api
+from ._io import _update_and_save
 
 
 def load_commits(user, project=None, data_home=None,
@@ -120,16 +121,7 @@ def update_commits(user, project=None, auth=None, since=None,
     # Update pre-existing data
     old_raw = load_commits(user, project, branch=branch,
                            data_home=data_home)
-    if old_raw is not None:
-        raw = pd.concat([raw, old_raw], ignore_index=True)
-        raw = raw.drop_duplicates(subset=['date'])
-    try:
-        os.makedirs(os.path.dirname(filename))
-    except OSError:
-        pass
-
-    # Save + return
-    raw.to_json(filename, date_format="iso")
+    _update_and_save(filename, raw, old_raw)
     return load_commits(user, project, data_home=data_home, branch=branch)
 
 
