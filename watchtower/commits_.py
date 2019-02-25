@@ -53,6 +53,9 @@ def update_commits(user, project=None, auth=None, since=None,
                    verbose=False, **params):
     """Update the commit data for a repository.
 
+    See https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository
+    for more information.
+
     Parameters
     ----------
     user : string

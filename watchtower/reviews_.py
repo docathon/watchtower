@@ -13,6 +13,9 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
     """
     Updates the reviews information for a user / project.
 
+    See https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request
+    for more information.
+
     Parameters
     ----------
     user : string

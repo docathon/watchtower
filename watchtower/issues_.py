@@ -14,6 +14,9 @@ def update_issues(user, project, auth=None, state="all", since=None,
     """
     Updates the issues information for a user / project.
 
+    See https://developer.github.com/v3/issues/#list-issues-for-a-repository
+    for more information.
+
     Parameters
     ----------
     user : string

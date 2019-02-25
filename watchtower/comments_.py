@@ -13,6 +13,9 @@ def update_comments(user, project, auth=None, state="all", since=None,
     """
     Updates the comments information for a user / project.
 
+    See https://developer.github.com/v3/issues/comments/#list-comments-in-a-repository
+    for more information.
+
     Parameters
     ----------
     user : string
