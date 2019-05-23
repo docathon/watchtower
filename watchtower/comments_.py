@@ -2,6 +2,7 @@ import os
 from os.path import join
 
 import pandas as pd
+from datetime import timedelta
 
 from . import _github_api
 from ._config import get_data_home, get_API_token
@@ -70,9 +71,14 @@ def update_comments(user, project, auth=None, state="all", since=None,
 
         current_raw = pd.DataFrame(current_raw)
         if direction == "asc":
-            since = max(current_raw["created_at"]).date()
+            since = max(
+                pd.DatetimeIndex(current_raw["created_at"])).date()
         else:
-            since = min(current_raw["created_at"]).date()
+            since = min(
+                pd.DatetimeIndex(current_raw["created_at"])).date()
+
+        since = (since - timedelta(days=1)).strftime("%Y-%m-%d")
+        # Tweak a bit since so that there's a day of overlap
         current_raw = pd.DataFrame(current_raw)
 
         if raw is not None:
