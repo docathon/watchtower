@@ -14,6 +14,9 @@ from pandas import to_datetime
 from numpy import ndarray
 
 Auth = collections.namedtuple('Auth', 'user auth')
+# else, it raises weird errors from time to time.
+# cf https://github.com/tqdm/tqdm/issues/481
+tqdm.monitor_interval = 0
 
 
 def colon_seperated_pair(arg):

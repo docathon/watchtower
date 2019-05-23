@@ -9,7 +9,7 @@ from ._config import get_data_home, get_API_token
 
 
 def update_reviews(user, project, pull_request_ids, auth=None, since=None,
-                   data_home=None, verbose=False, max_page=100, per_page=500):
+                   data_home=None, verbose=False, max_pages=100, per_page=500):
     """
     Updates the reviews information for a user / project.
 
@@ -50,13 +50,13 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
         for pr_id in pull_request_ids:
             raw.append(_update_review_single(
                 user, project, pr_id, auth=auth,
-                verbose=verbose, max_page=max_page,
+                verbose=verbose, max_pages=max_pages,
                 per_page=per_page))
         raw = pd.concat(raw)
     else:
         raw = _update_review_single(
                 user, project, pull_request_ids, auth=auth,
-                verbose=verbose, max_page=max_page,
+                verbose=verbose, max_pages=max_pages,
                 per_page=per_page)
     path = get_data_home(data_home=data_home)
 
@@ -80,14 +80,14 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
 
 
 def _update_review_single(user, project, pull_request_id, auth=None,
-                          verbose=False, max_page=100, per_page=500):
+                          verbose=False, max_pages=100, per_page=500):
     """
     Fetches the data for a single PR.
     """
     url = 'https://api.github.com/repos/{}/{}/pulls/{}/reviews'.format(
             user, project, pull_request_id)
     raw = _github_api.get_frames(auth, url,
-                                 max_page=max_page, per_page=per_page,
+                                 max_pages=max_pages, per_page=per_page,
                                  verbose=verbose)
     raw = pd.DataFrame(raw)
     return raw

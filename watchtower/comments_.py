@@ -52,12 +52,38 @@ def update_comments(user, project, auth=None, state="all", since=None,
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues/comments'.format(
         user, project)
-    raw = _github_api.get_frames(auth, url, state=state, since=since,
-                                 max_pages=max_pages, per_page=per_page,
-                                 direction=direction,
-                                 verbose=verbose)
+
     path = get_data_home(data_home=data_home)
-    raw = pd.DataFrame(raw)
+
+    max_num_comments = max_pages * per_page
+    current_num_comments = 0
+    raw = None
+
+    while current_num_comments < max_num_comments:
+        # We need to be a bit smant to get all of the data here
+        current_raw = _github_api.get_frames(
+            auth, url, state=state, since=since,
+            max_pages=max_pages, per_page=per_page,
+            direction=direction,
+            sort="created",
+            verbose=verbose)
+
+        current_raw = pd.DataFrame(current_raw)
+        if direction == "asc":
+            since = max(current_raw["created_at"]).date()
+        else:
+            since = min(current_raw["created_at"]).date()
+        current_raw = pd.DataFrame(current_raw)
+
+        if raw is not None:
+            raw = pd.concat([current_raw, raw], ignore_index=True)
+            raw = raw.drop_duplicates(subset=['id'])
+            if current_num_comments == len(raw):
+                # We're done, for one reason or another.
+                break
+        else:
+            raw = current_raw
+            current_num_comments = len(raw)
 
     if project is None:
         project = user
@@ -75,6 +101,13 @@ def update_comments(user, project, auth=None, state="all", since=None,
         pass
     raw.to_json(filename, date_format="iso")
     return load_comments(user, project, data_home=data_home)
+
+
+def _get_ticket_id_from_url(ticket_url):
+    if ticket_url is None:
+        return None
+    else:
+        return int(ticket_url.split("/")[-1])
 
 
 def load_comments(user, project, data_home=None,
