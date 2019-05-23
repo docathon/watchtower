@@ -109,13 +109,6 @@ def update_comments(user, project, auth=None, state="all", since=None,
     return load_comments(user, project, data_home=data_home)
 
 
-def _get_ticket_id_from_url(ticket_url):
-    if ticket_url is None:
-        return None
-    else:
-        return int(ticket_url.split("/")[-1])
-
-
 def load_comments(user, project, data_home=None,
                   state="all"):
     """
