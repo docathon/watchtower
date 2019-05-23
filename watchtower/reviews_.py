@@ -9,7 +9,8 @@ from ._config import get_data_home, get_API_token
 
 
 def update_reviews(user, project, pull_request_ids, auth=None, since=None,
-                   data_home=None, verbose=False, max_pages=100, per_page=500):
+                   data_home=None, verbose=False, direction="desc",
+                   max_pages=100, per_page=500):
     """
     Updates the reviews information for a user / project.
 
@@ -28,6 +29,9 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
     auth : string (user:api_key)
         The username / API key for github, separated by a colon. If
         None, the key `GITHUB_API` will be searched for in `environ`.
+
+    direction : ["asc", "desc"]
+        Whether to download oldest or newes comments first.
 
     since : string
         Search for activity since this date
@@ -51,12 +55,16 @@ def update_reviews(user, project, pull_request_ids, auth=None, since=None,
             raw.append(_update_review_single(
                 user, project, pr_id, auth=auth,
                 verbose=verbose, max_pages=max_pages,
+                direction=direction,
+                sort="created",
                 per_page=per_page))
         raw = pd.concat(raw)
     else:
         raw = _update_review_single(
                 user, project, pull_request_ids, auth=auth,
                 verbose=verbose, max_pages=max_pages,
+                direction=direction,
+                sort="created",
                 per_page=per_page)
     path = get_data_home(data_home=data_home)
 
