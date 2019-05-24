@@ -2,6 +2,7 @@ import os
 from os.path import join
 
 import pandas as pd
+from datetime import datetime
 from datetime import timedelta
 
 from . import _github_api
@@ -12,7 +13,7 @@ from ._io import _update_and_save
 def update_comments(user, project, auth=None, state="all", since=None,
                     data_home=None, verbose=False,
                     direction="desc",
-                    max_pages=100, per_page=500):
+                    max_pages=100, per_page=100):
     """
     Updates the comments information for a user / project.
 
@@ -60,6 +61,10 @@ def update_comments(user, project, auth=None, state="all", since=None,
     current_num_comments = 0
     raw = None
 
+    # Transform since into something that the github API understands
+    if since is not None:
+        since = datetime.strptime(since, "%Y-%m-%d").isoformat()
+
     while current_num_comments < max_num_comments:
         # We need to be a bit smant to get all of the data here
         current_raw = _github_api.get_frames(
@@ -70,14 +75,12 @@ def update_comments(user, project, auth=None, state="all", since=None,
             verbose=verbose)
 
         current_raw = pd.DataFrame(current_raw)
-        if direction == "asc":
-            since = max(
-                pd.DatetimeIndex(current_raw["created_at"])).date()
-        else:
-            since = min(
-                pd.DatetimeIndex(current_raw["created_at"])).date()
+        if not len(current_raw):
+            break
+        latest = max(
+                pd.DatetimeIndex(current_raw["created_at"]))
 
-        since = (since - timedelta(days=1)).strftime("%Y-%m-%d")
+        since = (latest - timedelta(hours=1)).isoformat()
         # Tweak a bit since so that there's a day of overlap
         current_raw = pd.DataFrame(current_raw)
 
@@ -89,7 +92,10 @@ def update_comments(user, project, auth=None, state="all", since=None,
                 break
         else:
             raw = current_raw
-            current_num_comments = len(raw)
+        current_num_comments = len(raw)
+
+        if verbose:
+            print("Downloaded up to", latest, "Starting again at", since)
 
     if project is None:
         project = user
