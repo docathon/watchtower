@@ -124,8 +124,8 @@ def extract_ticket_number(tickets):
     -------
     ticket_ids
     """
-    if tickets is None:
-        return np.array([])
+    if tickets is None or not len(tickets):
+        return np.array([0]).astype(int)
     if "html_url" not in tickets.columns:
         raise ValueError(
             "The provided DataFrame object doesn't contain"

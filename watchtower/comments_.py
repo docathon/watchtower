@@ -63,10 +63,11 @@ def update_comments(user, project, auth=None, state="all", since=None,
 
     # Transform since into something that the github API understands
     if since is not None:
-        since = datetime.strptime(since, "%Y-%m-%d").isoformat()
+        if verbose:
+            print("Starting download from", since)
 
     while current_num_comments < max_num_comments:
-        # We need to be a bit smant to get all of the data here
+        # We need to be a bit smart to get all of the data here
         current_raw = _github_api.get_frames(
             auth, url, state=state, since=since,
             max_pages=max_pages, per_page=per_page,
@@ -77,10 +78,14 @@ def update_comments(user, project, auth=None, state="all", since=None,
         current_raw = pd.DataFrame(current_raw)
         if not len(current_raw):
             break
-        latest = max(
+        if direction == "asc":
+            latest = max(pd.DatetimeIndex(current_raw["created_at"]))
+            since = (latest - timedelta(days=1)).isoformat()
+        else:
+            latest = min(
                 pd.DatetimeIndex(current_raw["created_at"]))
+            since = (latest + timedelta(days=1)).isoformat()
 
-        since = (latest - timedelta(hours=1)).isoformat()
         # Tweak a bit since so that there's a day of overlap
         current_raw = pd.DataFrame(current_raw)
 
