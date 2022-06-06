@@ -94,6 +94,9 @@ def update_comments(user, project, auth=None, state="all", since=None,
             raw = raw.drop_duplicates(subset=['id'])
             if current_num_comments == len(raw):
                 # We're done, for one reason or another.
+                if verbose:
+                    print("Downloaded", len(raw) - current_num_comments),
+                          "extra comments")
                 break
         else:
             raw = current_raw
