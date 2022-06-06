@@ -95,7 +95,7 @@ def update_comments(user, project, auth=None, state="all", since=None,
             if current_num_comments == len(raw):
                 # We're done, for one reason or another.
                 if verbose:
-                    print("Downloaded", len(raw) - current_num_comments),
+                    print("Downloaded", len(raw) - current_num_comments,
                           "extra comments")
                 break
         else:
