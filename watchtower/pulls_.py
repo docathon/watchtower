@@ -80,7 +80,8 @@ def update_pulls(user, project, auth=None, state="all", since=None,
 
 
 def update_detailed_pulls(user, project, auth=None, data_home=None,
-                          verbose=False, max_download=None):
+                          verbose=False, max_download=None, redownload=True,
+                          since=0):
     """
     Download detailed information on pulls
 
@@ -121,15 +122,18 @@ def update_detailed_pulls(user, project, auth=None, data_home=None,
         return None
 
     for i, pull in pulls.iterrows():
-        if pull["detailed_pulls"] is None or pd.isna(pull["detailed_pulls"]):
+        if i < since:
+            continue
+        if (pull["detailed_pulls"] is None or pd.isna(pull["detailed_pulls"])
+            or redownload):
+
             if verbose:
                 print("Downloading detailed data from PR %d" % i)
 
             detailed_pull_url = pull["_links"]["self"]["href"]
             raw = _github_api.get_detailed_page(
                 auth, detailed_pull_url)
-
-            pulls.loc[i, "detailed_pulls"] = str(raw)
+            pulls.at[i, "detailed_pulls"] = raw
 
             current_download += 1
             if current_download == max_download:
