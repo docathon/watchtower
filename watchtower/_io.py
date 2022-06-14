@@ -14,6 +14,11 @@ def _update_and_save(filename, raw, old_raw=None):
         else:
             raise ValueError("No known column to distinguish subsets")
         raw = raw.drop_duplicates(subset=[subset_column])
+
+    _save(filename, raw)
+
+
+def _save(filename, raw):
     try:
         os.makedirs(os.path.dirname(filename))
     except OSError:

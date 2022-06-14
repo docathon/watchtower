@@ -77,8 +77,8 @@ def get_entries(auth, url, max_pages=100, per_page=100,
         print('Updating repository: {}\nParams: {}'.format(url, params))
         iter_indices = tqdm(iter_indices)
     for page in iter_indices:  # for safety
+        params["page"] = str(page)
         try:
-            params['page'] = str(page)
             r = requests.get(url,
                              params=params,
                              auth=auth)
@@ -93,6 +93,38 @@ def get_entries(auth, url, max_pages=100, per_page=100,
             # Github sometimes just throws an error
             warnings.warn("Latest request raised an error: %s" % e)
             break
+
+
+def get_detailed_page(auth, url, params=None):
+    """
+    Get detailed page
+
+    Parameters
+    ----------
+    auth : string
+        GitHub's authentification hash:
+            username:hash
+
+    params : dictionary
+        
+    url : string
+        The URl of the github repository
+    """
+    try:
+        r = requests.get(url,
+                         params=params,
+                         auth=auth)
+
+        r.raise_for_status()
+        json = r.json()
+        if not json:
+            # empty list
+            return
+        return json
+    except HTTPError as e:
+        # Github sometimes just throws an error
+        warnings.warn("Latest request raised an error: %s" % e)
+        return
 
 
 def parse_github_dates(dates, tz='US/Pacific'):
