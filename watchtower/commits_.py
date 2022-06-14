@@ -1,6 +1,7 @@
 import os
-import pandas as pd
 from os.path import join
+import numpy as np
+import pandas as pd
 
 from ._config import get_data_home, get_API_token
 from . import _github_api
@@ -50,6 +51,7 @@ def load_commits(user, project=None, data_home=None,
 def update_commits(user, project=None, auth=None, since=None,
                    max_pages=100, per_page=100,
                    data_home=None, branch="master",
+                   direction="asc",
                    verbose=False, **params):
     """Update the commit data for a repository.
 
@@ -81,6 +83,9 @@ def update_commits(user, project=None, auth=None, since=None,
     branch : string, optional, default: "master"
         The branch fo the project to load.
 
+    direction : ["asc", "desc"]
+        Whether to download oldest or newest commits first.
+
     verbose : bool
         Controls progress bar display.
 
@@ -105,6 +110,7 @@ def update_commits(user, project=None, auth=None, since=None,
                                  max_pages=max_pages,
                                  per_page=per_page,
                                  verbose=verbose,
+                                 direction=direction,
                                  **params)
     raw = pd.DataFrame(raw)
 
@@ -175,3 +181,25 @@ def find_word_in_string(string, queries=None):
             in_string += 1
     in_string = in_string > 0
     return in_string
+
+
+def extract_commit_hash(commits):
+    """
+    """
+    if commits is None:
+        return np.array([])
+    if "html_url" not in commits.columns:
+        raise ValueError(
+            "The provided DataFrame object doesn't contain"
+            " the column html_url")
+    commit_hashes = commits["html_url"].apply(lambda x: x.split("/")[-1])
+    return commit_hashes.values
+
+
+def estimate_date_since_last_update(commits):
+    """
+    """
+    if commits is None:
+        return None
+    # FIXME
+    return max(commits["date"]).isoformat()

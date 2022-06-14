@@ -23,7 +23,9 @@ test-doc:
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(PYTEST) watchtower --showlocals -v --cov=watchtower --cov-report=html:coverage
+	#$(PYTEST) watchtower --showlocals -v --cov=watchtower --cov-report=html:coverage
+	$(PYTEST) watchtower --showlocals -v --cov=watchtower
+
 
 test: test-code test-doc
 

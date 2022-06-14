@@ -2,6 +2,8 @@ import os
 from os.path import join
 
 import pandas as pd
+from datetime import datetime
+from datetime import timedelta
 
 from . import _github_api
 from ._config import get_data_home, get_API_token
@@ -9,7 +11,9 @@ from ._io import _update_and_save
 
 
 def update_comments(user, project, auth=None, state="all", since=None,
-                    data_home=None, verbose=False, max_page=100, per_page=500):
+                    data_home=None, verbose=False,
+                    direction="desc",
+                    max_pages=100, per_page=100):
     """
     Updates the comments information for a user / project.
 
@@ -32,6 +36,9 @@ def update_comments(user, project, auth=None, state="all", since=None,
     since : string
         Search for activity since this date
 
+    direction : ["asc", "desc"]
+        Whether to download oldest or newes comments first.
+
     data_home : string
         The path to the watchtower data. Defaults to ~/watchtower_data.
 
@@ -47,11 +54,53 @@ def update_comments(user, project, auth=None, state="all", since=None,
     auth = _github_api.colon_seperated_pair(auth)
     url = 'https://api.github.com/repos/{}/{}/issues/comments'.format(
         user, project)
-    raw = _github_api.get_frames(auth, url, state=state, since=since,
-                                 max_page=max_page, per_page=per_page,
-                                 verbose=verbose)
+
     path = get_data_home(data_home=data_home)
-    raw = pd.DataFrame(raw)
+
+    max_num_comments = max_pages * per_page
+    current_num_comments = 0
+    raw = None
+
+    # Transform since into something that the github API understands
+    if since is not None:
+        if verbose:
+            print("Starting download from", since)
+
+    while current_num_comments < max_num_comments:
+        # We need to be a bit smart to get all of the data here
+        current_raw = _github_api.get_frames(
+            auth, url, state=state, since=since,
+            max_pages=max_pages, per_page=per_page,
+            direction=direction,
+            sort="created",
+            verbose=verbose)
+
+        current_raw = pd.DataFrame(current_raw)
+        if not len(current_raw):
+            break
+        if direction == "asc":
+            latest = max(pd.DatetimeIndex(current_raw["created_at"]))
+            since = (latest - timedelta(days=1)).isoformat()
+        else:
+            latest = min(
+                pd.DatetimeIndex(current_raw["created_at"]))
+            since = (latest + timedelta(days=1)).isoformat()
+
+        # Tweak a bit since so that there's a day of overlap
+        current_raw = pd.DataFrame(current_raw)
+
+        if raw is not None:
+            raw = pd.concat([current_raw, raw], ignore_index=True)
+            raw = raw.drop_duplicates(subset=['id'])
+            if current_num_comments == len(raw):
+                # We're done, for one reason or another.
+                break
+        else:
+            raw = current_raw
+        current_num_comments = len(raw)
+
+        if verbose:
+            print("Downloaded up to", latest, "Starting again at", since)
 
     if project is None:
         project = user
